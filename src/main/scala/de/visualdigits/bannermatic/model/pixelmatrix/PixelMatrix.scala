@@ -285,7 +285,7 @@ class PixelMatrix(var width: Int = 0,
         height == that.height &&
         fgColor == that.fgColor &&
         bgColor == that.bgColor &&
-        matrix == that.matrix
+        (matrix sameElements that.matrix)
     case _ => false
   }
 

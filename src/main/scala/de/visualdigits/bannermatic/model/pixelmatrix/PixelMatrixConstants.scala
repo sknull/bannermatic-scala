@@ -12,5 +12,4 @@ object PixelMatrixConstants {
   val FLAG_BLINK_RAPID: String = PixelMatrixConstants.ESCAPE + "[6m"
   val FLAG_BLINK_OFF: String = PixelMatrixConstants.ESCAPE + "[25m"
   val FLAG_INVERSE: String = PixelMatrixConstants.ESCAPE + "[7m"
-
 }

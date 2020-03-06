@@ -21,9 +21,9 @@ case class Config(
                    align: String = Align.center.entryName,
                    valign: String = VAlign.middle.entryName,
                    outputFile: Option[File] = Option.empty,
-                   //                   margin: String = "",
-                   //                   inverse: Boolean = false,
-                   //                   clip: Boolean = true
+                   // todo margin: String = "",
+                   // todo inverse: Boolean = false,
+                   // todo clip: Boolean = true
                  )
 
 object Config extends scala.AnyRef {

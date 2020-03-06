@@ -75,8 +75,7 @@ class Figlet(fontName: String = "default", width: Int = 80, direction: Direction
       val(savedBuffer, savedIterator) = blankMarkers.pop
       queue.addOne(savedBuffer)
       iterator = savedIterator
-    }
-    else {
+    } else {
       queue.addOne(buffer)
       iterator -= 1
     }

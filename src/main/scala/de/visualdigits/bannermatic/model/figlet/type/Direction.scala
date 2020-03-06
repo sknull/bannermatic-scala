@@ -1,6 +1,5 @@
 package de.visualdigits.bannermatic.model.figlet.`type`
 
-import de.visualdigits.bannermatic.model.figlet.`type`.Justify.{auto, center, left, right}
 import enumeratum._
 
 sealed trait Direction extends EnumEntry

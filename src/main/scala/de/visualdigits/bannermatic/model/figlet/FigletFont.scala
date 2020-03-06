@@ -1,6 +1,6 @@
 package de.visualdigits.bannermatic.model.figlet
 
-import java.io.{File, FileInputStream, InputStream}
+import java.io.InputStream
 
 import scala.collection.mutable
 import scala.io.Source

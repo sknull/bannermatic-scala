@@ -10,7 +10,6 @@ import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import javax.imageio.ImageIO
-import scopt.OParser
 
 object BannerMatic {
 
@@ -90,11 +89,10 @@ object BannerMatic {
 
   def main(args: Array[String]): Unit = {
     Config.parseArgs(args) match {
-      case Some(config) => {
+      case Some(config) =>
         println(config)
         val banner = render(config).map(_.toString).getOrElse("")
         if (config.outputFile.isEmpty && banner.nonEmpty) println(banner)
-      }
       case _ =>
     }
   }

@@ -1,6 +1,5 @@
 package de.visualdigits.bannermatic.model.pixelmatrix.`type`
 
-import de.visualdigits.bannermatic.model.pixelmatrix.`type`.Align.{center, left, right}
 import enumeratum._
 
 sealed class VAlign(val v: Int = 0) extends EnumEntry {

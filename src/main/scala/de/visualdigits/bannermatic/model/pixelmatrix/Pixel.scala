@@ -38,6 +38,6 @@ class Pixel(var fgColor: Color = Pixel.COLOR_DEFAULT, var bgColor: Color = Pixel
 object Pixel {
   def apply(fgColor: Color = Pixel.COLOR_DEFAULT, bgColor: Color = Pixel.COLOR_DEFAULT, char: Char = Pixel.CHAR_DEFAULT) = new Pixel(fgColor, bgColor, char)
 
-  val COLOR_DEFAULT = Color("default")
+  val COLOR_DEFAULT: Color = Color("default")
   val CHAR_DEFAULT = ' '
 }
