@@ -1,11 +1,13 @@
 package de.visualdigits.bannermatic.model.figlet
 
-import org.junit.Test
+import org.junit.{Assert, Test}
+import org.scalatest.FunSuite
 
-class FigletFontTest {
+class FigletFontTest extends FunSuite {
 
-  @Test def test(): Unit = {
+  test("test") {
     val font = FigletFont("fonts/brite.flf")
-    println(font)
+    Assert.assertEquals(11, font.height)
+    Assert.assertEquals(8, font.baseLine)
   }
 }

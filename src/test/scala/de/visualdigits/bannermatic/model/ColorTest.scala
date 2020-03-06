@@ -1,13 +1,13 @@
 package de.visualdigits.bannermatic.model
 
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrixConstants}
-import org.junit.Test
 import org.junit.Assert._
+import org.scalatest.FunSuite
 
 
-class ColorTest {
+class ColorTest extends FunSuite {
 
-  @Test def testColors(): Unit = {
+  test("test colors") {
     val c1 = Color()
     val c2 = Color(red = 255)
     val c3 = Color(green = 255)

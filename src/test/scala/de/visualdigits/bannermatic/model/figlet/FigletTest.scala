@@ -1,12 +1,14 @@
 package de.visualdigits.bannermatic.model.figlet
 
-import org.junit.Test
+import org.junit.{Assert, Test}
+import org.scalatest.FunSuite
 
-class FigletTest {
+class FigletTest extends FunSuite {
 
-  @Test def test(): Unit = {
+  test("test") {
     val figlet = Figlet(font = "5lineoblique", width = 100)
     val text = figlet.renderText("Hello World!")
-    println(text)
+    val expectedText = "                                                                                     \n                                                                                     \n    //    / /                         ||   / |  / /                               // \n   //___ / /  ___     // //  ___      ||  /  | / /  ___      __     //  ___   /  //  \n  / ___   / //___) ) // // //   ) )   || / /||/ / //   ) ) //  ) ) // //   ) /  //   \n //    / / //       // // //   / /    ||/ / |  / //   / / //      // //   / /        \n//    / / ((____   // // ((___/ /     |  /  | / ((___/ / //      // ((___/ /  //     \n"
+    Assert.assertEquals(expectedText, text.toString)
   }
 }
