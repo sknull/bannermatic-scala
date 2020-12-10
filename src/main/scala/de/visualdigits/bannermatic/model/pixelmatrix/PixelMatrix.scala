@@ -200,12 +200,12 @@ class PixelMatrix(var width: Int = 0,
     matrix(column).exists(_.char != char)
   }
 
-  def inset(amount: Int, aspect: Double = 2.0, char: Char = ' '): PixelMatrix = {
+  def inset(amount: Int, pixelRatio: Double = 0.5, char: Char = ' '): PixelMatrix = {
     clone()
       .pad(Inset.top, amount, char)
       .pad(Inset.bottom, amount, char)
-      .pad(Inset.left, (aspect * amount).toInt, char)
-      .pad(Inset.right, (aspect * amount).toInt, char)
+      .pad(Inset.left, (amount / pixelRatio).toInt, char)
+      .pad(Inset.right, (amount / pixelRatio).toInt, char)
   }
 
   def clip(char: Char = ' '): PixelMatrix = {

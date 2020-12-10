@@ -1,7 +1,7 @@
 package de.visualdigits.bannermatic
 
 import java.io.File
-import java.nio.charset.Charset
+import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file.Files
 
 import de.visualdigits.bannermatic.model.pixelmatrix.Color
@@ -40,7 +40,7 @@ class BannerMaticTest extends FunSuite {
   test("Render Image") {
     val image: File = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI)
     val banner = BannerMatic.renderImage(image, 120, pixelRatio = 3.0 / 7.0)
-    val bannerExpected: String = Files.readString(new File(ClassLoader.getSystemClassLoader.getResource("renderedImage_expected.txt").toURI).toPath, Charset.forName("utf-8"))
+    val bannerExpected: String = new String(Files.readAllBytes(new File(ClassLoader.getSystemClassLoader.getResource("renderedImage_expected.txt").toURI).toPath), StandardCharsets.UTF_8)
     Assert.assertEquals(bannerExpected, banner.toString)
   }
 

@@ -18,6 +18,7 @@ case class Config(
                    font: String = "basic",
                    image: Option[File] = Option.empty,
                    imageWidth: Int = 80,
+                   pixelRatio: Double = 0.5,
                    align: String = Align.center.entryName,
                    valign: String = VAlign.middle.entryName,
                    outputFile: Option[File] = Option.empty,

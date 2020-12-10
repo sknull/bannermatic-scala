@@ -34,7 +34,13 @@ object BannerMatic {
     for (y <- 0 until height) for (x <- 0 until width) {
       val c = new java.awt.Color(ims.getRGB(x, y), cm.hasAlpha)
       val alpha = c.getAlpha
-      val pixelColor = if (alpha < THRESHOLD_ALPHA) Color("default") else Color(red   = c.getRed, green = c.getGreen, blue = c.getBlue, alpha = alpha)
+      val pixelIsNearBlack = Seq(c.getRed, c.getGreen, c.getBlue).forall(_ < THRESHOLD_ALPHA)
+      val pixelIsNearTransparent = cm.hasAlpha && c.getAlpha < THRESHOLD_ALPHA
+      val pixelColor = if (pixelIsNearTransparent || pixelIsNearBlack) {
+        Color("default")
+      } else {
+        Color(red   = c.getRed, green = c.getGreen, blue = c.getBlue, alpha = alpha)
+      }
       if (isBackground) matrix.setBgColor(x)(y)(pixelColor)
       else matrix.setFgColor(x)(y)(pixelColor)
     }
@@ -48,7 +54,7 @@ object BannerMatic {
       textBanner = Some(renderText(config.text, config.textWidth, config.font, Color(config.color), Color.DEFAULT, Direction.valueOf(config.textDirection), Justify.valueOf(config.textJustify)))
     }
     if (config.image.nonEmpty) {
-      imageBanner = Some(renderImage(config.image.get, config.imageWidth))
+      imageBanner = Some(renderImage(config.image.get, config.imageWidth, pixelRatio = config.pixelRatio))
     }
     var w = 0
     var h = 0
@@ -56,7 +62,7 @@ object BannerMatic {
       val tb = textBanner.get
       textBanner = Some(tb.clip())
       if (config.textPadding > 0) {
-        textBanner = Some(tb.inset(config.textPadding))
+        textBanner = Some(tb.inset(config.textPadding, config.pixelRatio))
       }
       w = Math.max(w, tb.width)
       h = Math.max(h, tb.height)

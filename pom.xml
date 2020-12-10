@@ -16,6 +16,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <displayCmd>true</displayCmd>
+
+    <version.orgEclipseM2e.lifecycleMapping>1.0.0</version.orgEclipseM2e.lifecycleMapping>
   </properties>
 
   <dependencies>
