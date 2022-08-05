@@ -24,22 +24,16 @@ case class PixelMatrix(
                         grayscale: Boolean = false,
                         edgeDetection: Boolean = false,
 
-                        flags: Set[String] = Set(),
-                        offX: Int = 0,
-                        offY: Int = 0
+                        flags: Set[String] = Set()
                       ) {
 
-  private val THRESHOLD_ALPHA = 4
-
   private var matrix = Array[Array[Pixel]]()
-
-  private var value = Array[Array[String]]()
 
   private val nAsciiArtChars = asciiArtChars.length
 
   initMatrix(width, height)
 
-  def loadMatrix(o: PixelMatrix): Unit = {
+  def loadMatrix(o: PixelMatrix, offX: Int = 0, offY: Int = 0): PixelMatrix = {
     loadRows(o.getValue, offX, offY, true, nAsciiArtChars > 0)
     for (y <- 0 until o.height) {
       for (x <- 0 until o.width) {
@@ -48,12 +42,16 @@ case class PixelMatrix(
         setBgColor(x + offX)(y + offY)(op.bgColor)
       }
     }
+    this
   }
 
   override def clone(): PixelMatrix = {
-    val c = PixelMatrix(width = width, height = height, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-    c.loadRows(c.value, c.offX, c.offY, true, c.nAsciiArtChars > 0)
-    for (y <- 0 until height) for (x <- 0 until width) c.matrix(x)(y) = matrix(x)(y).clone()
+    val c = this.copy()
+    for (y <- 0 until height) {
+      for (x <- 0 until width) {
+        c.matrix(x)(y) = matrix(x)(y).clone()
+      }
+    }
     c
   }
 
@@ -70,7 +68,7 @@ case class PixelMatrix(
     this
   }
 
-  private def loadRows(value: Array[Array[String]], offX: Int, offY: Int, grow: Boolean, isAsciiArt: Boolean): Unit = {
+  private def loadRows(value: Array[Array[String]], offX: Int = 0, offY: Int = 0, grow: Boolean = true, isAsciiArt: Boolean = false): PixelMatrix = {
     if (value.nonEmpty) {
       val w = value.map(_.length).max
       this.width = if (grow) Math.max(width, w) else Math.min(width, w)
@@ -98,6 +96,7 @@ case class PixelMatrix(
         }
       }
     }
+    this
   }
 
   override def toString: String = {
@@ -136,8 +135,8 @@ case class PixelMatrix(
     for (y <- 0 until height) for (x <- 0 until width) {
       val c = new awt.Color(imageScaled.getRGB(x, y), colorModel.hasAlpha)
       val alpha = c.getAlpha
-      val pixelIsNearBlack = Seq(c.getRed, c.getGreen, c.getBlue).forall(_ < THRESHOLD_ALPHA)
-      val pixelIsNearTransparent = colorModel.hasAlpha && c.getAlpha < THRESHOLD_ALPHA
+      val pixelIsNearBlack = Seq(c.getRed, c.getGreen, c.getBlue).forall(_ < PixelMatrix.THRESHOLD_ALPHA)
+      val pixelIsNearTransparent = colorModel.hasAlpha && c.getAlpha < PixelMatrix.THRESHOLD_ALPHA
       val pixelColor = if (pixelIsNearTransparent || pixelIsNearBlack) {
         Color("default")
       } else {
@@ -175,63 +174,26 @@ case class PixelMatrix(
 
   def pad(location: Inset, amount: Int, char: String = " "): PixelMatrix = {
     location match {
-      case Inset.top => {
-        val pm = PixelMatrix(width = width, height = height + amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, offY = amount, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.loadMatrix(this)
-        pm
-      }
-      case Inset.bottom => {
-        val pm = PixelMatrix(width = width, height = height + amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.loadMatrix(this)
-        pm
-      }
-      case Inset.left => {
-        val pm = PixelMatrix(width = width + amount, height = height, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, offX = amount, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.loadMatrix(this)
-        pm
-      }
-      case Inset.right => {
-        val pm = PixelMatrix(width = width + amount, height = height, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.loadMatrix(this)
-        pm
-      }
+      case Inset.top => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this, offY = amount)
+      case Inset.bottom => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this)
+      case Inset.left => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this, offX = amount)
+      case Inset.right => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this)
       case _ => clone()
     }
   }
 
   def trim(location: Inset, amount: Int): PixelMatrix = {
     location match {
-      case Inset.top => {
-        val pm = PixelMatrix(width = width, height = height - amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, offY = amount, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.value = getValue
-        pm.loadRows(pm.value, pm.offX, pm.offY, false, pm.nAsciiArtChars > 0)
-        pm
-      }
-      case Inset.bottom => {
-        val pm = PixelMatrix(width = width, height = height - amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.value = getValue
-        pm.loadRows(pm.value, pm.offX, pm.offY,false, pm.nAsciiArtChars > 0)
-        pm
-      }
-      case Inset.left => {
-        val pm = PixelMatrix(width = width - amount, height = height, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, offX = amount, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.value = getValue
-        pm.loadRows(pm.value, pm.offX, pm.offY, false, pm.nAsciiArtChars > 0)
-        pm
-      }
-      case Inset.right => {
-        val pm = PixelMatrix(width = width - amount, height = height, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-        pm.value = getValue
-        pm.loadRows(pm.value, pm.offX, pm.offY, false, pm.nAsciiArtChars > 0)
-        pm
-      }
+      case Inset.top => this.copy(height = height - amount).loadRows(value = getValue, offY = amount, grow = false, isAsciiArt = nAsciiArtChars > 0)
+      case Inset.bottom => this.copy(height = height - amount).loadRows(value = getValue, grow = false, isAsciiArt = nAsciiArtChars > 0)
+      case Inset.left => this.copy(width = width - amount).loadRows(value = getValue, offX = amount, grow = false, isAsciiArt = nAsciiArtChars > 0)
+      case Inset.right => this.copy(width = width - amount).loadRows(value = getValue, grow = false, isAsciiArt = nAsciiArtChars > 0)
       case _ => clone()
     }
   }
 
   def overlay(horizontal: Align, vertical: VAlign, overlay: PixelMatrix, placement: Placement = Placement.inside): PixelMatrix = {
     var p = clone()
-
     p = placement match {
       case Placement.outside =>
         p = horizontal match {
@@ -423,6 +385,8 @@ case class PixelMatrix(
 
 object PixelMatrix {
 
+  val THRESHOLD_ALPHA = 4
+
   val ESCAPE: Char = BigInt("033", 8).toChar
 
   val CODE_FG = 38
@@ -471,9 +435,7 @@ object PixelMatrix {
     val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
     val finalWidth = Math.max(width, rows.map(_.length).max)
     val pm = PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
-    pm.value = rows
-    pm.loadRows(pm.value, pm.offX, pm.offY, true, pm.nAsciiArtChars > 0)
-    pm
+    pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0)
 
   }
 

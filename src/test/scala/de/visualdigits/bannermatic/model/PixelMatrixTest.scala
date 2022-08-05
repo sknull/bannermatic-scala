@@ -1,15 +1,11 @@
 package de.visualdigits.bannermatic.model
 
-import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.Inset
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatestplus.junit.JUnitRunner
-
-import java.io.File
 
 @RunWith(classOf[JUnitRunner])
 class PixelMatrixTest extends FunSuite {
@@ -33,7 +29,7 @@ class PixelMatrixTest extends FunSuite {
   }
 
   test("padding and clipping") {
-    var pm = PixelMatrix(width = 10, height = 5, char="_", offX=1, offY=2)
+    var pm = PixelMatrix(width = 10, height = 5, char="_")
     pm = pm.pad(location = Inset.top, amount = 3, char = "1")
     pm = pm.pad(location = Inset.right, amount = 6, char = "2")
     pm = pm.pad(location = Inset.bottom, amount = 3, char = "3")
@@ -55,7 +51,7 @@ class PixelMatrixTest extends FunSuite {
   }
 
   test("clipping") {
-    val pm = PixelMatrix(width = 10, height = 2, char=" ", offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
+    val pm = PixelMatrix(width = 10, height = 2, char=" ", fgColor = Color.YELLOW, bgColor = Color.BLUE)
       .clip()
       .inset(1)
 
