@@ -1,6 +1,7 @@
 package de.visualdigits.bannermatic
 
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
+import de.visualdigits.bannermatic.model.pixelmatrix.PixelMatrix.{renderImage, renderText}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import org.junit.Assert.assertEquals
@@ -16,7 +17,7 @@ import java.nio.file.Files
 class BannerMaticTest extends FunSuite {
   
   test("Render Text") {
-    val banner = PixelMatrix(
+    val banner = renderText(
       text = "Hello World!",
       width = 80,
       font = "basic",
@@ -49,7 +50,7 @@ class BannerMaticTest extends FunSuite {
 
   test("Render Image") {
     val imageFile: File = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI)
-    val banner = PixelMatrix(
+    val banner = renderImage(
       imageFile = imageFile,
       width = 120,
       char = " ",
@@ -66,7 +67,7 @@ class BannerMaticTest extends FunSuite {
 
   test("combine") {
     val imageFile: File = new File(ClassLoader.getSystemClassLoader.getResource("images/raspberry/raspberrypi.png").toURI)
-    val bg = PixelMatrix(
+    val bg = renderImage(
       imageFile = imageFile,
       width = 90,
       char = " ",
@@ -76,7 +77,7 @@ class BannerMaticTest extends FunSuite {
       grayscale = true,
       edgeDetection = true
     )
-    val fg = PixelMatrix(
+    val fg = renderText(
       text = "RASPBERRY PI",
       width = 100,
       font = "basic",

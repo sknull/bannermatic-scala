@@ -382,7 +382,7 @@ object PixelMatrix {
   val ASCII_ART_CHARS_SHORT: Array[String] = "@%#*+=-:. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_SMILEYS: Array[String] = Array(" ", "🫥", "〠", "👌", "👐", "+", "*", "%", "&", "〠", "I", "O", "M", "#", "😍")
 ""
-  def apply(
+  def renderImage(
              imageFile: File,
              width: Int,
              char: String,
@@ -399,7 +399,7 @@ object PixelMatrix {
       .loadImage(image, width, height, isBackground, grayscale)
   }
 
-  def apply(
+  def renderText(
              text: String,
              width: Int,
              font: String,
@@ -417,7 +417,7 @@ object PixelMatrix {
 
   def apply(config: Config): PixelMatrix = {
     var textBanner = stringOption(config.text).map(text =>
-      PixelMatrix(
+      renderText(
         text = text,
         width = config.textWidth,
         font = config.font,
@@ -426,7 +426,7 @@ object PixelMatrix {
         direction = Direction.valueOf(config.textDirection),
         justify = Justify.valueOf(config.textJustify)
       ))
-    val imageBanner = config.image.map(image => PixelMatrix(
+    val imageBanner = config.image.map(image => renderImage(
       imageFile = image,
       width = config.imageWidth,
       char = " ",

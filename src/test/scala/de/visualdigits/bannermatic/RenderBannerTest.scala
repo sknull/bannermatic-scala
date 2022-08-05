@@ -1,6 +1,7 @@
 package de.visualdigits.bannermatic
 
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
+import de.visualdigits.bannermatic.model.pixelmatrix.PixelMatrix.{renderImage, renderText}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import org.junit.runner.RunWith
@@ -14,7 +15,7 @@ class RenderBannerTest extends FunSuite {
 
   test("Render a banner") {
     val image: File = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI)
-    val bg = PixelMatrix(
+    val bg = renderImage(
       imageFile = image,
       width = 60,
       char = " ",
@@ -24,7 +25,7 @@ class RenderBannerTest extends FunSuite {
       grayscale = true,
       edgeDetection = true
     )
-    val fg = PixelMatrix(
+    val fg = renderText(
       text = "TEXTBOX",
       width = 100,
       font = "basic",
