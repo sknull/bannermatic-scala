@@ -33,7 +33,7 @@ class PixelMatrixTest extends FunSuite {
   }
 
   test("padding and clipping") {
-    var pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char="_", offX=1, offY=2)
+    var pm = PixelMatrix(width = 10, height = 5, char="_", offX=1, offY=2)
     pm = pm.pad(location = Inset.top, amount = 3, char = "1")
     pm = pm.pad(location = Inset.right, amount = 6, char = "2")
     pm = pm.pad(location = Inset.bottom, amount = 3, char = "3")
@@ -46,8 +46,8 @@ class PixelMatrixTest extends FunSuite {
     val expectedPM = """[49m[49m44111111111122[0m
                        |[49m[49m44__________22[0m
                        |[49m[49m44__________22[0m
-                       |[49m[49m44_Hello____22[0m
-                       |[49m[49m44_World____22[0m
+                       |[49m[49m44__________22[0m
+                       |[49m[49m44__________22[0m
                        |[49m[49m44__________22[0m
                        |[49m[49m44333333333333[0m
                        |""".stripMargin
@@ -55,14 +55,14 @@ class PixelMatrixTest extends FunSuite {
   }
 
   test("clipping") {
-    val pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char=" ", offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
+    val pm = PixelMatrix(width = 10, height = 2, char=" ", offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
       .clip()
       .inset(1)
 
-    val expectedPM = """[33m[44m[33m[44m         [0m
-                       |[33m[44m[33m[44m  Hello  [0m
-                       |[33m[44m[33m[44m  World  [0m
-                       |[33m[44m[33m[44m         [0m
+    val expectedPM = """[33m[44m[33m[44m              [0m
+                       |[33m[44m[33m[44m              [0m
+                       |[33m[44m[33m[44m              [0m
+                       |[33m[44m[33m[44m              [0m
                        |""".stripMargin
     assertEquals(expectedPM, pm.toString)
   }
