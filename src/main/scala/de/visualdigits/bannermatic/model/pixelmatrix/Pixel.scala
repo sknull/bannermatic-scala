@@ -1,16 +1,26 @@
 package de.visualdigits.bannermatic.model.pixelmatrix
 
-class Pixel(var fgColor: Color = Pixel.COLOR_DEFAULT, var bgColor: Color = Pixel.COLOR_DEFAULT, var char: Char = Pixel.CHAR_DEFAULT) {
+case class Pixel(
+                  var fgColor: Color = Pixel.COLOR_DEFAULT,
+                  var bgColor: Color = Pixel.COLOR_DEFAULT,
+                  var char: Char = Pixel.CHAR_DEFAULT,
+                  asciiArt: Boolean = false,
+                  grayscale: Boolean = false
+                ) {
 
   this.fgColor.isBackground = false
   this.bgColor.isBackground = true
 
   override def clone(): Pixel = {
-     Pixel(fgColor.clone(), bgColor.clone(), char)
+     Pixel(fgColor.clone(), bgColor.clone(), char, asciiArt = asciiArt, grayscale = grayscale)
   }
 
   override def toString: String = {
-    fgColor.toString() + bgColor.toString() + char
+    if (grayscale && asciiArt) {
+      char.toString
+    } else {
+      fgColor.toString() + bgColor.toString() + char
+    }
   }
 
   def hasSameColors(other: Pixel): Boolean = other match {
@@ -36,8 +46,6 @@ class Pixel(var fgColor: Color = Pixel.COLOR_DEFAULT, var bgColor: Color = Pixel
 }
 
 object Pixel {
-  def apply(fgColor: Color = Pixel.COLOR_DEFAULT, bgColor: Color = Pixel.COLOR_DEFAULT, char: Char = Pixel.CHAR_DEFAULT) = new Pixel(fgColor, bgColor, char)
-
   val COLOR_DEFAULT: Color = Color("default")
   val CHAR_DEFAULT = ' '
 }

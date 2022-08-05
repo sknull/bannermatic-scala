@@ -4,7 +4,12 @@ import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 
 import scala.collection.mutable
 
-class Figlet(fontName: String = "default", width: Int = 80, direction: Direction = Direction.auto, justify: Justify = Justify.auto) {
+class Figlet(
+              fontName: String = "default",
+              width: Int = 80,
+              direction: Direction = Direction.auto,
+              justify: Justify = Justify.auto
+            ) {
 
   private var text: IndexedSeq[Int] = _
   private var font: FigletFont = _

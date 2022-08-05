@@ -15,8 +15,8 @@ class Demo extends FunSuite {
       textPlacement = "outside",
       valign = "bottom",
       color = "#d01349",
-      outputFile = Some(new File(System.getProperty("user.home"), "banner.txt"))
     )
     val banner = BannerMatic.render(config).get
+    println(banner)
   }
 }

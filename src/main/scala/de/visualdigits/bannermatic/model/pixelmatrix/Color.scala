@@ -1,6 +1,13 @@
 package de.visualdigits.bannermatic.model.pixelmatrix
 
-class Color(val name: String = "", var isBackground: Boolean = false, var red: Int, var green: Int, var blue: Int, var alpha: Int) {
+case class Color(
+                  name: String = "",
+                  var isBackground: Boolean = false,
+                  var red: Int = 0,
+                  var green: Int = 0,
+                  var blue: Int = 0,
+                  var alpha: Int = 0
+                ) {
 
   init()
 
@@ -36,6 +43,27 @@ class Color(val name: String = "", var isBackground: Boolean = false, var red: I
     }
   }
 
+  /**
+   * Converts the current RGB value to a grayscale value [0.0 - 1.0] using the luminosity method
+   * as described here: see https://www.baeldung.com/cs/convert-rgb-to-grayscale
+   *
+   * @return Double
+   */
+  def toGray: Double = {
+    red / 255.0 *0.3 + green / 255.0 * 0.59 + blue / 255.0 * 0.11
+  }
+
+  def fade(bgColor: Color): Color = {
+    val a = alpha / 255.0
+    val ia = 1.0 - alpha / 255.0
+    val c = Color(
+      red = (red * a + bgColor.red * ia).toInt,
+      green = (green * a + bgColor.green * ia).toInt,
+      blue = (blue * a + bgColor.blue * ia).toInt
+    )
+    c
+  }
+
   override def clone(): Color = {
     Color(name, isBackground, red, green, blue, alpha)
   }
@@ -60,8 +88,6 @@ class Color(val name: String = "", var isBackground: Boolean = false, var red: I
 }
 
 object Color {
-  def apply(name: String = "", isBackground: Boolean = false, red: Int = 0, green: Int = 0, blue: Int = 0, alpha: Int = 0) = new Color(name, isBackground, red, green, blue, alpha)
-
   val RED: Color = Color("RED" )
   val GREEN: Color = Color("GREEN")
   val YELLOW: Color = Color("YELLOW")
