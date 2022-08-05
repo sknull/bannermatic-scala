@@ -1,12 +1,13 @@
 package de.visualdigits.bannermatic.model.figlet
 
 import java.io.InputStream
-
 import scala.collection.mutable
 import scala.io.Source
 import scala.util.matching.Regex
 
-class FigletFont(resourcePath: String) {
+case class FigletFont(
+                       resourcePath: String
+                     ) {
 
   private val MAGIC_NUMBER = new Regex("^[tf]lf2.")
   private val END_MARKER = new Regex("(.)\\s*$")
@@ -111,8 +112,4 @@ class FigletFont(resourcePath: String) {
     }
     lines
   }
-}
-
-object FigletFont {
-  def apply(resourcePath: String) = new FigletFont(resourcePath)
 }

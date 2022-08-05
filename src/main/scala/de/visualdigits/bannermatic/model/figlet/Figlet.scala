@@ -4,7 +4,7 @@ import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 
 import scala.collection.mutable
 
-class Figlet(
+case class Figlet(
               fontName: String = "default",
               width: Int = 80,
               direction: Direction = Direction.auto,
@@ -100,8 +100,4 @@ class Figlet(
       case _ => buffer
     }
   }
-}
-
-object Figlet {
-  def apply(font: String = "default", width: Int = 80, direction: Direction = Direction.auto, justify: Justify = Justify.auto) = new Figlet(font, width, direction, justify)
 }

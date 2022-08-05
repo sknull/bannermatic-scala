@@ -1,13 +1,16 @@
 package de.visualdigits.bannermatic.model.pixelmatrix
 
+import de.visualdigits.bannermatic.Config
 import de.visualdigits.bannermatic.model.figlet.Figlet
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Inset, Placement, VAlign}
+import de.visualdigits.bannermatic.utils.StringUtil.stringOption
 
 import java.awt
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.Files
 import javax.imageio.ImageIO
 import scala.collection.mutable
 
@@ -88,7 +91,7 @@ case class PixelMatrix(
   override def toString: String = {
     val rows = mutable.ListBuffer[String]()
     val prefix = if (grayscale && nAsciiArtChars > 0) "" else fgColor.toString + bgColor.toString + flags.mkString("")
-    val suffix = if (grayscale && nAsciiArtChars > 0) "" else PixelMatrixConstants.RESET
+    val suffix = if (grayscale && nAsciiArtChars > 0) "" else PixelMatrix.RESET
     for (y <- 0 until height) {
       var row = prefix
       var prevPixel = Pixel()
@@ -362,6 +365,17 @@ case class PixelMatrix(
 
 object PixelMatrix {
 
+  val ESCAPE: Char = BigInt("033", 8).toChar
+
+  val CODE_FG = 38
+
+  val RESET: String = PixelMatrix.ESCAPE + "[0m"
+
+  val FLAG_BLINK_SLOW: String = PixelMatrix.ESCAPE + "[5m"
+  val FLAG_BLINK_RAPID: String = PixelMatrix.ESCAPE + "[6m"
+  val FLAG_BLINK_OFF: String = PixelMatrix.ESCAPE + "[25m"
+  val FLAG_INVERSE: String = PixelMatrix.ESCAPE + "[7m"
+
   val ASCII_ART_CHARS_DEFAULT: Array[String] = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_MEDIUM: Array[String] = "︎@#MOI$&%*+=-:. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_PERL: Array[String] = " .,:;+=oaeOAM#$@".toCharArray.map(_.toString)
@@ -399,5 +413,60 @@ object PixelMatrix {
     val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
     val finalWidth = Math.max(width, rows.map(_.length).max)
     PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor, value = rows)
+  }
+
+  def apply(config: Config): PixelMatrix = {
+    var textBanner = stringOption(config.text).map(text =>
+      PixelMatrix(
+        text = text,
+        width = config.textWidth,
+        font = config.font,
+        fgColor = Color(config.color),
+        bgColor = Color.DEFAULT,
+        direction = Direction.valueOf(config.textDirection),
+        justify = Justify.valueOf(config.textJustify)
+      ))
+    val imageBanner = config.image.map(image => PixelMatrix(
+      imageFile = image,
+      width = config.imageWidth,
+      char = " ",
+      isBackground = true,
+      pixelRatio = config.pixelRatio,
+      asciiArtChars = config.asciiArtChars,
+      grayscale = config.grayscale,
+      edgeDetection = config.edgeDetection
+    ))
+    var w = 0
+    var h = 0
+    if (textBanner.nonEmpty) {
+      val tb = textBanner.get
+      textBanner = Some(tb.clip())
+      if (config.textPadding > 0) {
+        textBanner = Some(tb.inset(config.textPadding, config.pixelRatio))
+      }
+      w = Math.max(w, tb.width)
+      h = Math.max(h, tb.height)
+    }
+    if (imageBanner.nonEmpty) {
+      w = Math.max(w, imageBanner.get.width)
+      h = Math.max(h, imageBanner.get.height)
+    }
+
+    val banner = {
+      if (imageBanner.nonEmpty && textBanner.nonEmpty) {
+        val align = Align.valueOf(config.align)
+        val valign = VAlign.valueOf(config.valign)
+        val placement = Placement.valueOf(config.textPlacement)
+        Some(imageBanner.get.overlay(align, valign, textBanner.get, placement))
+      } else if (imageBanner.nonEmpty) {
+        imageBanner
+      } else if (textBanner.nonEmpty) {
+        textBanner
+      } else {
+        None
+      }
+    }
+    config.outputFile.foreach(of => banner.foreach(b => Files.write(of.toPath, b.toString.getBytes())))
+    banner.orNull
   }
 }

@@ -1,10 +1,13 @@
 package de.visualdigits.bannermatic.model
 
-import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrixConstants}
+import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import org.junit.Assert._
+import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.scalatestplus.junit.JUnitRunner
 
 
+@RunWith(classOf[JUnitRunner])
 class ColorTest extends FunSuite {
 
   test("test colors") {
@@ -18,14 +21,14 @@ class ColorTest extends FunSuite {
     val c8 = Color("blue", true)
     val c9 = Color("255;0;0")
 
-    assertEquals(PixelMatrixConstants.ESCAPE + "[38;2;0;0;0m"  , c1.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[38;2;255;0;0m", c2.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[38;2;0;255;0m", c3.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[38;2;0;0;255m", c4.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[48;2;0;0;0m"  , c6.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[34m"          , c7.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[44m"          , c8.toString())
-    assertEquals(PixelMatrixConstants.ESCAPE + "[38;2;255;0;0m", c9.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[38;2;0;0;0m"  , c1.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[38;2;255;0;0m", c2.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[38;2;0;255;0m", c3.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[38;2;0;0;255m", c4.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[48;2;0;0;0m"  , c6.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[34m"          , c7.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[44m"          , c8.toString())
+    assertEquals(PixelMatrix.ESCAPE + "[38;2;255;0;0m", c9.toString())
 
     assertNotEquals("Compare with None considered as equal", c1, None)
     assertNotEquals("Compare with None considered as equal", None, c1)

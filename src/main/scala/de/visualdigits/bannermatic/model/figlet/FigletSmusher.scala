@@ -4,7 +4,10 @@ import de.visualdigits.bannermatic.model.figlet.`type`.Direction
 
 import scala.collection.mutable
 
-class FigletSmusher(direction: Direction = Direction.auto, font: FigletFont) {
+case class FigletSmusher(
+                     direction: Direction = Direction.auto,
+                     font: FigletFont
+                   ) {
 
   private val SM_EQUAL = 1       // smush equal chars (not hardblanks)
   private val SM_LOWLINE = 2     // smush _ with any char in hierarchy
@@ -134,8 +137,4 @@ class FigletSmusher(direction: Direction = Direction.auto, font: FigletFont) {
   private def ltrim(s: String): String = s.replaceAll("^\\s+", "")
 
   private def rtrim(s: String): String = s.replaceAll("\\s+$", "")
-}
-
-object FigletSmusher {
-  def apply(direction: Direction = Direction.auto, font: FigletFont) = new FigletSmusher(direction, font)
 }

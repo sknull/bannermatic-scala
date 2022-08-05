@@ -1,14 +1,38 @@
 package de.visualdigits.bannermatic
 
-import java.io.File
-
+import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
+import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import org.scalatest.FunSuite
+
+import java.io.File
 
 class Demo extends FunSuite {
 
-  test("utf-8") {
-    val c = "\uD83D\uDE05"
-    println(c)
+  test("create raspberry banner") {
+    val imageMatrix = PixelMatrix(
+      imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI),
+      width = 80,
+      char = " ",
+      isBackground = true,
+      pixelRatio = 0.4,
+      asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
+      //      asciiArtChars = Array(),
+      grayscale = true,
+      edgeDetection = true
+    )
+    val textMatrix = PixelMatrix(
+      text = "RaspBerryPi",
+      width = 120,
+      font = "basic",
+      fgColor = Color.GREEN,
+      bgColor = Color.BLACK,
+      direction = Direction.auto,
+      justify = Justify.center
+    )
+
+    //    Files.write(Paths.get("/Users/knull/banner.txt"), matrix.toString.getBytes())
+    println(textMatrix)
+    println(imageMatrix)
   }
 
   ignore("create raspberry banner") {
@@ -21,7 +45,7 @@ class Demo extends FunSuite {
       valign = "bottom",
       color = "#d01349",
     )
-    val banner = BannerMatic.render(config).get
+    val banner = PixelMatrix(config)
     println(banner)
   }
 }

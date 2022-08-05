@@ -1,10 +1,10 @@
 package de.visualdigits.bannermatic
 
-import java.io.File
-
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}
 import scopt.OParser
+
+import java.io.File
 
 
 case class Config(

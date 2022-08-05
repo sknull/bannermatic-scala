@@ -4,40 +4,17 @@ import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.Inset
 import de.visualdigits.bannermatic.model.pixelmatrix.{Color, PixelMatrix}
 import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.scalatestplus.junit.JUnitRunner
 
 import java.io.File
 
+@RunWith(classOf[JUnitRunner])
 class PixelMatrixTest extends FunSuite {
 
-  test("create raspberry banner") {
-    val imageMatrix = PixelMatrix(
-      imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI),
-      width = 80,
-      char = " ",
-      isBackground = true,
-      pixelRatio = 0.4,
-      asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
-//      asciiArtChars = Array(),
-      grayscale = true,
-      edgeDetection = true
-    )
-    val textMatrix = PixelMatrix(
-      text = "RaspBerryPi",
-      width = 120,
-      font = "basic",
-      fgColor = Color.GREEN,
-      bgColor = Color.BLACK,
-      direction = Direction.auto,
-      justify = Justify.center
-    )
-
-    //    Files.write(Paths.get("/Users/knull/banner.txt"), matrix.toString.getBytes())
-//    println(textMatrix)
-    println(imageMatrix)
-  }
-
-  ignore("bg color") {
+  test("bg color") {
     val width = 7
     val height = 3
     val pm = PixelMatrix(width = width, height = height, char = " ")
@@ -52,10 +29,10 @@ class PixelMatrixTest extends FunSuite {
                        |[49m[49m[49m[48;2;255;255;255m       [0m
                        |[49m[49m[49m[48;2;255;255;255m       [0m
                        |""".stripMargin
-    Assert.assertEquals(expectedPM, pm.toString)
+    assertEquals(expectedPM, pm.toString)
   }
 
-  ignore("padding and clipping") {
+  test("padding and clipping") {
     var pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char="_", offX=1, offY=2)
     pm = pm.pad(location = Inset.top, amount = 3, char = "1")
     pm = pm.pad(location = Inset.right, amount = 6, char = "2")
@@ -74,10 +51,10 @@ class PixelMatrixTest extends FunSuite {
                        |[49m[49m44__________22[0m
                        |[49m[49m44333333333333[0m
                        |""".stripMargin
-    Assert.assertEquals(expectedPM, pm.toString)
+    assertEquals(expectedPM, pm.toString)
   }
 
-  ignore("clipping") {
+  test("clipping") {
     val pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char=" ", offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
       .clip()
       .inset(1)
@@ -87,6 +64,6 @@ class PixelMatrixTest extends FunSuite {
                        |[33m[44m[33m[44m  World  [0m
                        |[33m[44m[33m[44m         [0m
                        |""".stripMargin
-    Assert.assertEquals(expectedPM, pm.toString)
+    assertEquals(expectedPM, pm.toString)
   }
 }

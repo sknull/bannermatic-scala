@@ -1,8 +1,11 @@
 package de.visualdigits.bannermatic.model.figlet
 
-import org.junit.{Assert, Test}
+import org.junit.Assert
+import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.scalatestplus.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class FigletFontTest extends FunSuite {
 
   test("test") {

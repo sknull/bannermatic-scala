@@ -35,11 +35,11 @@ case class Color(
     if (name.nonEmpty && Color.COLOR_CODES.contains(uname)) {
       var ansiCode =  Color.COLOR_CODES(uname)
       if (isBackground) ansiCode += 10
-      PixelMatrixConstants.ESCAPE + "[%dm".format(ansiCode)
+      PixelMatrix.ESCAPE + "[%dm".format(ansiCode)
     } else {
-      var ansiCode = PixelMatrixConstants.CODE_FG
+      var ansiCode = PixelMatrix.CODE_FG
       if (isBackground) ansiCode += 10
-      PixelMatrixConstants.ESCAPE + "[%d;2;%d;%d;%dm".format(ansiCode, red, green, blue)
+      PixelMatrix.ESCAPE + "[%d;2;%d;%d;%dm".format(ansiCode, red, green, blue)
     }
   }
 
