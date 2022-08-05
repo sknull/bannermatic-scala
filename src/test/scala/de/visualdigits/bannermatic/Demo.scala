@@ -6,7 +6,12 @@ import org.scalatest.FunSuite
 
 class Demo extends FunSuite {
 
-  test("create raspberry banner") {
+  test("utf-8") {
+    val c = "\uD83D\uDE05"
+    println(c)
+  }
+
+  ignore("create raspberry banner") {
     val image: Option[File] = Some(new File(ClassLoader.getSystemClassLoader.getResource("images/raspberry/RaspberryPi_Logo_30.png").toURI))
     val config = Config(
       image = image,

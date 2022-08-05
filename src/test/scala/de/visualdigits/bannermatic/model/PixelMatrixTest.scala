@@ -12,14 +12,14 @@ class PixelMatrixTest extends FunSuite {
 
   test("create raspberry banner") {
     val imageMatrix = PixelMatrix(
-      imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/AppleRetro.png").toURI),
+      imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/rose-red.png").toURI),
       width = 80,
-      char = ' ',
+      char = " ",
       isBackground = true,
       pixelRatio = 0.4,
       asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
-//      asciiArtChars = "",
-      grayscale = false,
+//      asciiArtChars = Array(),
+      grayscale = true,
       edgeDetection = true
     )
     val textMatrix = PixelMatrix(
@@ -40,7 +40,7 @@ class PixelMatrixTest extends FunSuite {
   ignore("bg color") {
     val width = 7
     val height = 3
-    val pm = PixelMatrix(width = width, height = height, char = ' ')
+    val pm = PixelMatrix(width = width, height = height, char = " ")
     for (y <- 0 until height) {
       for (x <- 0 until width) {
         val c2 = Color(red = (255 * Math.random()).toInt, green = (255 * Math.random()).toInt, blue = (255 * Math.random()).toInt)
@@ -56,11 +56,11 @@ class PixelMatrixTest extends FunSuite {
   }
 
   ignore("padding and clipping") {
-    var pm = PixelMatrix(width = 10, height = 5, value = Array[Array[Char]]("Hello".toCharArray, "World".toCharArray), char='_', offX=1, offY=2)
-    pm = pm.pad(location = Inset.top, amount = 3, char = '1')
-    pm = pm.pad(location = Inset.right, amount = 6, char = '2')
-    pm = pm.pad(location = Inset.bottom, amount = 3, char = '3')
-    pm = pm.pad(location = Inset.left, amount = 6, char = '4')
+    var pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char="_", offX=1, offY=2)
+    pm = pm.pad(location = Inset.top, amount = 3, char = "1")
+    pm = pm.pad(location = Inset.right, amount = 6, char = "2")
+    pm = pm.pad(location = Inset.bottom, amount = 3, char = "3")
+    pm = pm.pad(location = Inset.left, amount = 6, char = "4")
     pm = pm.trim(Inset.top, 2)
     pm = pm.trim(Inset.right, 4)
     pm = pm.trim(Inset.bottom, 2)
@@ -78,7 +78,7 @@ class PixelMatrixTest extends FunSuite {
   }
 
   ignore("clipping") {
-    val pm = PixelMatrix(width = 10, height = 5, value = Array[Array[Char]]("Hello".toCharArray, "World".toCharArray), char=' ', offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
+    val pm = PixelMatrix(width = 10, height = 5, value = Array[Array[String]]("Hello".toCharArray.map(_.toString), "World".toCharArray.map(_.toString)), char=" ", offX=1, offY=2, fgColor = Color.YELLOW, bgColor = Color.BLUE)
       .clip()
       .inset(1)
 

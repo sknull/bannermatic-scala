@@ -33,7 +33,7 @@ object BannerMatic {
   def renderImage(
                    imageFile: File,
                    width: Int,
-                   char: Char = ' ',
+                   char: String = " ",
                    isBackground: Boolean = true,
                    pixelRatio: Double = 0.5
                  ): PixelMatrix = {
@@ -43,7 +43,7 @@ object BannerMatic {
       char = char,
       isBackground = isBackground,
       pixelRatio = pixelRatio,
-      asciiArtChars = "",
+      asciiArtChars = Array(),
       grayscale = false,
       edgeDetection = false
     )
@@ -54,7 +54,7 @@ object BannerMatic {
     val imageBanner = config.image.map(image => PixelMatrix(
       imageFile = image,
       width = config.imageWidth,
-      char = ' ',
+      char = " ",
       isBackground = true,
       pixelRatio = config.pixelRatio,
       asciiArtChars = config.asciiArtChars,

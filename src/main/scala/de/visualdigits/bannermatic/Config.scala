@@ -22,7 +22,7 @@ case class Config(
                    align: String = Align.center.entryName,
                    valign: String = VAlign.middle.entryName,
                    outputFile: Option[File] = None,
-                   asciiArtChars: String = "",
+                   asciiArtChars: Array[String] = Array(),
                    grayscale: Boolean = false,
                    edgeDetection: Boolean = false,
                    // todo margin: String = "",

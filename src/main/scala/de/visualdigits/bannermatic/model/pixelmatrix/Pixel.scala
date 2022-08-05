@@ -3,7 +3,7 @@ package de.visualdigits.bannermatic.model.pixelmatrix
 case class Pixel(
                   var fgColor: Color = Pixel.COLOR_DEFAULT,
                   var bgColor: Color = Pixel.COLOR_DEFAULT,
-                  var char: Char = Pixel.CHAR_DEFAULT,
+                  var char: String = Pixel.CHAR_DEFAULT,
                   asciiArt: Boolean = false,
                   grayscale: Boolean = false
                 ) {
@@ -47,5 +47,5 @@ case class Pixel(
 
 object Pixel {
   val COLOR_DEFAULT: Color = Color("default")
-  val CHAR_DEFAULT = ' '
+  val CHAR_DEFAULT = " "
 }

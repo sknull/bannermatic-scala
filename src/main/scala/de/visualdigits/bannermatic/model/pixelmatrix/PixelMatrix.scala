@@ -14,14 +14,14 @@ import scala.collection.mutable
 case class PixelMatrix(
                         var width: Int = 0,
                         var height: Int = 0,
-                        var char: Char = Pixel.CHAR_DEFAULT,
+                        var char: String = Pixel.CHAR_DEFAULT,
                         var fgColor: Color = Pixel.COLOR_DEFAULT,
                         var bgColor: Color = Pixel.COLOR_DEFAULT,
-                        asciiArtChars: String = "",
+                        asciiArtChars: Array[String] = Array(),
                         grayscale: Boolean = false,
                         edgeDetection: Boolean = false,
 
-                        value: Array[Array[Char]] = Array[Array[Char]](),
+                        value: Array[Array[String]] = Array[Array[String]](),
                         flags: Set[String] = Set(),
                         offX: Int = 0,
                         offY: Int = 0,
@@ -57,7 +57,7 @@ case class PixelMatrix(
     c
   }
 
-  private def initMatrix(width: Int = 0, height: Int = 0, value: Array[Array[Char]] = Array[Array[Char]](), offX: Int = 0, offY: Int = 0, grow: Boolean = true): PixelMatrix = {
+  private def initMatrix(width: Int = 0, height: Int = 0, value: Array[Array[String]] = Array[Array[String]](), offX: Int = 0, offY: Int = 0, grow: Boolean = true): PixelMatrix = {
     val isAsciiArt = nAsciiArtChars > 0
     if (value.nonEmpty) {
       val w = value.map(_.length).max
@@ -133,7 +133,7 @@ case class PixelMatrix(
         if (!grayscale) {
           setFgColor(x)(y)(pixelColor)
         }
-        setChar(x)(y)(asciiArtChars.charAt((pixelColor.toGray * nAsciiArtChars).toInt))
+        setChar(x)(y)(asciiArtChars((pixelColor.toGray * nAsciiArtChars).toInt))
       }
     }
     this
@@ -148,7 +148,7 @@ case class PixelMatrix(
     resized
   }
 
-  def pad(location: Inset, amount: Int, char: Char = ' '): PixelMatrix = {
+  def pad(location: Inset, amount: Int, char: String = " "): PixelMatrix = {
     location match {
       case Inset.top => PixelMatrix(width = width, height = height + amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, offY = amount, other = Some(this), asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
       case Inset.bottom => PixelMatrix(width = width, height = height + amount, char = char, fgColor = fgColor, bgColor = bgColor, flags = flags, other = Some(this), asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
@@ -247,23 +247,23 @@ case class PixelMatrix(
     matrix.length
   }
 
-  def rowEmpty(row: Int, char: Char = ' '): Boolean = {
+  def rowEmpty(row: Int, char: String = " "): Boolean = {
     matrix.forall(_(row).char == char)
   }
 
-  def rowNonEmpty(row: Int, char: Char = ' '): Boolean = {
+  def rowNonEmpty(row: Int, char: String = " "): Boolean = {
     matrix.exists(_(row).char != char)
   }
 
-  def columnEmpty(column: Int, char: Char = ' '): Boolean = {
+  def columnEmpty(column: Int, char: String = " "): Boolean = {
     matrix(column).forall(_.char == char)
   }
 
-  def columnNonEmpty(column: Int, char: Char = ' '): Boolean = {
+  def columnNonEmpty(column: Int, char: String = " "): Boolean = {
     matrix(column).exists(_.char != char)
   }
 
-  def inset(amount: Int, pixelRatio: Double = 0.5, char: Char = ' '): PixelMatrix = {
+  def inset(amount: Int, pixelRatio: Double = 0.5, char: String = " "): PixelMatrix = {
     clone()
       .pad(Inset.top, amount, char)
       .pad(Inset.bottom, amount, char)
@@ -271,7 +271,7 @@ case class PixelMatrix(
       .pad(Inset.right, (amount / pixelRatio).toInt, char)
   }
 
-  def clip(char: Char = ' '): PixelMatrix = {
+  def clip(char: String = " "): PixelMatrix = {
     var p = clone()
     val nc = columns() - 1
     val nr = rows() - 1
@@ -283,18 +283,18 @@ case class PixelMatrix(
     p
   }
 
-  def boundingBox(char: Char = ' '): (Int, Int, Int, Int) = {
+  def boundingBox(char: String = " "): (Int, Int, Int, Int) = {
     (findFirstNonEmptyColumn(char), findFirstNonEmptyRow(char), findLastNonEmptyColumn(char), findLastNonEmptyRow(char))
   }
 
-  private def findFirstNonEmptyColumn(char: Char = ' '): Int = {
+  private def findFirstNonEmptyColumn(char: String = " "): Int = {
     for (column <- 0 until columns()) {
       if (columnNonEmpty(column, char)) return column
     }
     0
   }
 
-  private def findLastNonEmptyColumn(char: Char = ' '): Int = {
+  private def findLastNonEmptyColumn(char: String = " "): Int = {
     val n = columns() - 1
     for (column <- n to 0 by -1) {
       if (columnNonEmpty(column, char)) return column
@@ -302,14 +302,14 @@ case class PixelMatrix(
     n
   }
 
-  private def findFirstNonEmptyRow(char: Char = ' '): Int = {
+  private def findFirstNonEmptyRow(char: String = " "): Int = {
     for (row <- 0 until rows()) {
       if (rowNonEmpty(row, char)) return row
     }
     0
   }
 
-  private def findLastNonEmptyRow(char: Char = ' '): Int = {
+  private def findLastNonEmptyRow(char: String = " "): Int = {
     val n = rows() - 1
     for (row <- n to 0 by -1) {
       if (rowNonEmpty(row, char)) return row
@@ -317,13 +317,13 @@ case class PixelMatrix(
     n
   }
 
-  private def getValue: Array[Array[Char]] = {
-    val value = Array.ofDim[Char](height, width)
+  private def getValue: Array[Array[String]] = {
+    val value = Array.ofDim[String](height, width)
     for (y <- 0 until height) for (x <- 0 until width) value(y)(x) = this.matrix(x)(y).char
     value
   }
 
-  def setChar(x: Int)(y: Int)(c: Char): Unit = {
+  def setChar(x: Int)(y: Int)(c: String): Unit = {
     matrix(x)(y).char = c
   }
 
@@ -362,18 +362,19 @@ case class PixelMatrix(
 
 object PixelMatrix {
 
-  val ASCII_ART_CHARS_DEFAULT: String = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse
-  val ASCII_ART_CHARS_MEDIUM: String = "︎@#MOI$&%*+=-:. ".reverse
-  val ASCII_ART_CHARS_PERL: String = " .,:;+=oaeOAM#$@"
-  val ASCII_ART_CHARS_SHORT: String = "@%#*+=-:. ".reverse
-
+  val ASCII_ART_CHARS_DEFAULT: Array[String] = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ".reverse.toCharArray.map(_.toString)
+  val ASCII_ART_CHARS_MEDIUM: Array[String] = "︎@#MOI$&%*+=-:. ".reverse.toCharArray.map(_.toString)
+  val ASCII_ART_CHARS_PERL: Array[String] = " .,:;+=oaeOAM#$@".toCharArray.map(_.toString)
+  val ASCII_ART_CHARS_SHORT: Array[String] = "@%#*+=-:. ".reverse.toCharArray.map(_.toString)
+  val ASCII_ART_CHARS_SMILEYS: Array[String] = Array(" ", "🫥", "〠", "👌", "👐", "+", "*", "%", "&", "〠", "I", "O", "M", "#", "😍")
+""
   def apply(
              imageFile: File,
              width: Int,
-             char: Char,
+             char: String,
              isBackground: Boolean,
              pixelRatio: Double,
-             asciiArtChars: String,
+             asciiArtChars: Array[String],
              grayscale: Boolean,
              edgeDetection: Boolean
            ): PixelMatrix = {
@@ -395,7 +396,7 @@ object PixelMatrix {
            ): PixelMatrix = {
     val figlet = Figlet(font, width, direction, justify)
     val raw = figlet.renderText(text)
-    val rows = raw.split("\n").map(_.toCharArray)
+    val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
     val finalWidth = Math.max(width, rows.map(_.length).max)
     PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor, value = rows)
   }
