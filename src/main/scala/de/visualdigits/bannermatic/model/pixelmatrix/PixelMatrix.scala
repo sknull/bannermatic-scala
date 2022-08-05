@@ -27,77 +27,10 @@ case class PixelMatrix(
                         flags: Set[String] = Set()
                       ) {
 
+  private val nAsciiArtChars = asciiArtChars.length
   private var matrix = Array[Array[Pixel]]()
 
-  private val nAsciiArtChars = asciiArtChars.length
-
   initMatrix(width, height)
-
-  def loadMatrix(o: PixelMatrix, offX: Int = 0, offY: Int = 0): PixelMatrix = {
-    loadRows(o.getValue, offX, offY, true, nAsciiArtChars > 0)
-    for (y <- 0 until o.height) {
-      for (x <- 0 until o.width) {
-        val op = o.matrix(x)(y)
-        setFgColor(x + offX)(y + offY)(op.fgColor)
-        setBgColor(x + offX)(y + offY)(op.bgColor)
-      }
-    }
-    this
-  }
-
-  override def clone(): PixelMatrix = {
-    val c = this.copy()
-    for (y <- 0 until height) {
-      for (x <- 0 until width) {
-        c.matrix(x)(y) = matrix(x)(y).clone()
-      }
-    }
-    c
-  }
-
-  private def initMatrix(width: Int = 0, height: Int = 0): PixelMatrix = {
-    val isAsciiArt = nAsciiArtChars > 0
-    this.width = width
-    this.height = height
-    this.matrix = Array.ofDim[Pixel](width, height)
-    for (y <- 0 until height) {
-      for (x <- 0 until width) {
-        this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
-      }
-    }
-    this
-  }
-
-  private def loadRows(value: Array[Array[String]], offX: Int = 0, offY: Int = 0, grow: Boolean = true, isAsciiArt: Boolean = false): PixelMatrix = {
-    if (value.nonEmpty) {
-      val w = value.map(_.length).max
-      this.width = if (grow) Math.max(width, w) else Math.min(width, w)
-      val h = value.length
-      this.height = if (grow) Math.max(height, h) else Math.min(height, h)
-      this.matrix = Array.ofDim[Pixel](width, height)
-      for (y <- 0 until this.height) {
-        for (x <- 0 until this.width) {
-          this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
-        }
-      }
-      if (grow) {
-        for (y <- 0 until h) {
-          val row = value(y)
-          val w = row.length
-          for (x <- 0 until w) {
-            this.matrix(offX + x)(offY + y) = Pixel(fgColor, bgColor, row(x), isAsciiArt, grayscale)
-          }
-        }
-      } else {
-        for (y <- 0 until this.height) {
-          for (x <- 0 until this.width) {
-            this.matrix(x)(y) = Pixel(fgColor, bgColor, value(y + offY)(x + offX), isAsciiArt, grayscale)
-          }
-        }
-      }
-    }
-    this
-  }
 
   override def toString: String = {
     val rows = mutable.ListBuffer[String]()
@@ -172,14 +105,20 @@ case class PixelMatrix(
     resized
   }
 
-  def pad(location: Inset, amount: Int, char: String = " "): PixelMatrix = {
-    location match {
-      case Inset.top => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this, offY = amount)
-      case Inset.bottom => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this)
-      case Inset.left => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this, offX = amount)
-      case Inset.right => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this)
-      case _ => clone()
-    }
+  private def setChar(x: Int)(y: Int)(c: String): Unit = {
+    matrix(x)(y).char = c
+  }
+
+  private def setFgColor(x: Int)(y: Int)(color: Color): Unit = {
+    val c = color.clone()
+    c.isBackground = false
+    matrix(x)(y).fgColor = c
+  }
+
+  private def setBgColor(x: Int)(y: Int)(color: Color): Unit = {
+    val c = color.clone()
+    c.isBackground = true
+    matrix(x)(y).bgColor = c
   }
 
   def trim(location: Inset, amount: Int): PixelMatrix = {
@@ -270,16 +209,8 @@ case class PixelMatrix(
     matrix.length
   }
 
-  def rowEmpty(row: Int, char: String = " "): Boolean = {
-    matrix.forall(_(row).char == char)
-  }
-
   def rowNonEmpty(row: Int, char: String = " "): Boolean = {
     matrix.exists(_(row).char != char)
-  }
-
-  def columnEmpty(column: Int, char: String = " "): Boolean = {
-    matrix(column).forall(_.char == char)
   }
 
   def columnNonEmpty(column: Int, char: String = " "): Boolean = {
@@ -292,6 +223,75 @@ case class PixelMatrix(
       .pad(Inset.bottom, amount, char)
       .pad(Inset.left, (amount / pixelRatio).toInt, char)
       .pad(Inset.right, (amount / pixelRatio).toInt, char)
+  }
+
+  def pad(location: Inset, amount: Int, char: String = " "): PixelMatrix = {
+    location match {
+      case Inset.top => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this, offY = amount)
+      case Inset.bottom => this.copy(height = height + amount, char = char).loadMatrix(this).loadMatrix(this)
+      case Inset.left => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this, offX = amount)
+      case Inset.right => this.copy(width = width + amount, char = char).loadMatrix(this).loadMatrix(this)
+      case _ => clone()
+    }
+  }
+
+  private def loadMatrix(o: PixelMatrix, offX: Int = 0, offY: Int = 0): PixelMatrix = {
+    loadRows(value = o.getValue, offX = offX, offY = offY, grow = true, isAsciiArt = nAsciiArtChars > 0)
+    for (y <- 0 until o.height) {
+      for (x <- 0 until o.width) {
+        val op = o.matrix(x)(y)
+        setFgColor(x + offX)(y + offY)(op.fgColor)
+        setBgColor(x + offX)(y + offY)(op.bgColor)
+      }
+    }
+    this
+  }
+
+  private def loadRows(value: Array[Array[String]], offX: Int = 0, offY: Int = 0, grow: Boolean = true, isAsciiArt: Boolean = false): PixelMatrix = {
+    if (value.nonEmpty) {
+      val w = value.map(_.length).max
+      this.width = if (grow) Math.max(width, w) else Math.min(width, w)
+      val h = value.length
+      this.height = if (grow) Math.max(height, h) else Math.min(height, h)
+      this.matrix = Array.ofDim[Pixel](width, height)
+      for (y <- 0 until this.height) {
+        for (x <- 0 until this.width) {
+          this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
+        }
+      }
+      if (grow) {
+        for (y <- 0 until h) {
+          val row = value(y)
+          val w = row.length
+          for (x <- 0 until w) {
+            this.matrix(offX + x)(offY + y) = Pixel(fgColor, bgColor, row(x), isAsciiArt, grayscale)
+          }
+        }
+      } else {
+        for (y <- 0 until this.height) {
+          for (x <- 0 until this.width) {
+            this.matrix(x)(y) = Pixel(fgColor, bgColor, value(y + offY)(x + offX), isAsciiArt, grayscale)
+          }
+        }
+      }
+    }
+    this
+  }
+
+  private def getValue: Array[Array[String]] = {
+    val value = Array.ofDim[String](height, width)
+    for (y <- 0 until height) for (x <- 0 until width) value(y)(x) = this.matrix(x)(y).char
+    value
+  }
+
+  override def clone(): PixelMatrix = {
+    val c = this.copy()
+    for (y <- 0 until height) {
+      for (x <- 0 until width) {
+        c.matrix(x)(y) = matrix(x)(y).clone()
+      }
+    }
+    c
   }
 
   def clip(char: String = " "): PixelMatrix = {
@@ -308,6 +308,39 @@ case class PixelMatrix(
 
   def boundingBox(char: String = " "): (Int, Int, Int, Int) = {
     (findFirstNonEmptyColumn(char), findFirstNonEmptyRow(char), findLastNonEmptyColumn(char), findLastNonEmptyRow(char))
+  }
+
+  override def equals(other: Any): Boolean = other match {
+    case that: PixelMatrix =>
+      (that canEqual this) &&
+        width == that.width &&
+        height == that.height &&
+        fgColor == that.fgColor &&
+        bgColor == that.bgColor &&
+        (asciiArtChars sameElements that.asciiArtChars) &&
+        grayscale == that.grayscale &&
+        (matrix sameElements that.matrix)
+    case _ => false
+  }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[PixelMatrix]
+
+  override def hashCode(): Int = {
+    val state = Seq(width, height, fgColor, bgColor, matrix)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
+
+  private def initMatrix(width: Int = 0, height: Int = 0): PixelMatrix = {
+    val isAsciiArt = nAsciiArtChars > 0
+    this.width = width
+    this.height = height
+    this.matrix = Array.ofDim[Pixel](width, height)
+    for (y <- 0 until height) {
+      for (x <- 0 until width) {
+        this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
+      }
+    }
+    this
   }
 
   private def findFirstNonEmptyColumn(char: String = " "): Int = {
@@ -339,48 +372,6 @@ case class PixelMatrix(
     }
     n
   }
-
-  private def getValue: Array[Array[String]] = {
-    val value = Array.ofDim[String](height, width)
-    for (y <- 0 until height) for (x <- 0 until width) value(y)(x) = this.matrix(x)(y).char
-    value
-  }
-
-  def setChar(x: Int)(y: Int)(c: String): Unit = {
-    matrix(x)(y).char = c
-  }
-
-  def setFgColor(x: Int)(y: Int)(color: Color): Unit = {
-    val c = color.clone()
-    c.isBackground = false
-    matrix(x)(y).fgColor = c
-  }
-
-  def setBgColor(x: Int)(y: Int)(color: Color): Unit = {
-    val c = color.clone()
-    c.isBackground = true
-    matrix(x)(y).bgColor = c
-  }
-
-  def canEqual(other: Any): Boolean = other.isInstanceOf[PixelMatrix]
-
-  override def equals(other: Any): Boolean = other match {
-    case that: PixelMatrix =>
-      (that canEqual this) &&
-        width == that.width &&
-        height == that.height &&
-        fgColor == that.fgColor &&
-        bgColor == that.bgColor &&
-        asciiArtChars == that.asciiArtChars &&
-        grayscale == that.grayscale &&
-        (matrix sameElements that.matrix)
-    case _ => false
-  }
-
-  override def hashCode(): Int = {
-    val state = Seq(width, height, fgColor, bgColor, matrix)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
 }
 
 object PixelMatrix {
@@ -404,40 +395,6 @@ object PixelMatrix {
   val ASCII_ART_CHARS_SHORT: Array[String] = "@%#*+=-:. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_SMILEYS: Array[String] = Array(" ", "🫥", "〠", "👌", "👐", "+", "*", "%", "&", "〠", "I", "O", "M", "#", "😍")
 ""
-  def renderImage(
-             imageFile: File,
-             width: Int,
-             char: String,
-             isBackground: Boolean,
-             pixelRatio: Double,
-             asciiArtChars: Array[String],
-             grayscale: Boolean,
-             edgeDetection: Boolean
-           ): PixelMatrix = {
-    val image = ImageIO.read(imageFile)
-    val ratio = pixelRatio * image.getHeight / image.getWidth
-    val height = (width * ratio * 10 + 0.5).toInt / 10
-    PixelMatrix(width = width, height = height, char = char, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-      .loadImage(image, width, height, isBackground, grayscale)
-  }
-
-  def renderText(
-             text: String,
-             width: Int,
-             font: String,
-             fgColor: Color,
-             bgColor: Color,
-             direction: Direction,
-             justify: Justify
-           ): PixelMatrix = {
-    val figlet = Figlet(font, width, direction, justify)
-    val raw = figlet.renderText(text)
-    val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
-    val finalWidth = Math.max(width, rows.map(_.length).max)
-    val pm = PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
-    pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0)
-
-  }
 
   def apply(config: Config): PixelMatrix = {
     var textBanner = stringOption(config.text).map(text =>
@@ -492,5 +449,40 @@ object PixelMatrix {
     }
     config.outputFile.foreach(of => banner.foreach(b => Files.write(of.toPath, b.toString.getBytes())))
     banner.orNull
+  }
+
+  def renderImage(
+             imageFile: File,
+             width: Int,
+             char: String,
+             isBackground: Boolean,
+             pixelRatio: Double,
+             asciiArtChars: Array[String],
+             grayscale: Boolean,
+             edgeDetection: Boolean
+           ): PixelMatrix = {
+    val image = ImageIO.read(imageFile)
+    val ratio = pixelRatio * image.getHeight / image.getWidth
+    val height = (width * ratio * 10 + 0.5).toInt / 10
+    PixelMatrix(width = width, height = height, char = char, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
+      .loadImage(image, width, height, isBackground, grayscale)
+  }
+
+  def renderText(
+             text: String,
+             width: Int,
+             font: String,
+             fgColor: Color,
+             bgColor: Color,
+             direction: Direction,
+             justify: Justify
+           ): PixelMatrix = {
+    val figlet = Figlet(font, width, direction, justify)
+    val raw = figlet.renderText(text)
+    val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
+    val finalWidth = Math.max(width, rows.map(_.length).max)
+    val pm = PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
+    pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0)
+
   }
 }

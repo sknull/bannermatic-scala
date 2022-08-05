@@ -13,17 +13,11 @@ class PixelMatrixTest extends FunSuite {
   test("bg color") {
     val width = 7
     val height = 3
-    val pm = PixelMatrix(width = width, height = height, char = " ")
-    for (y <- 0 until height) {
-      for (x <- 0 until width) {
-        val c2 = Color(red = (255 * Math.random()).toInt, green = (255 * Math.random()).toInt, blue = (255 * Math.random()).toInt)
-        pm.setBgColor(x)(y)(Color.WHITE)
-      }
-    }
+    val pm = PixelMatrix(width = width, height = height, char = " ", bgColor = Color.WHITE)
 
-    val expectedPM = """[49m[49m[49m[48;2;255;255;255m       [0m
-                       |[49m[49m[49m[48;2;255;255;255m       [0m
-                       |[49m[49m[49m[48;2;255;255;255m       [0m
+    val expectedPM = """[39m[48;2;255;255;255m[49m[48;2;255;255;255m       [0m
+                       |[39m[48;2;255;255;255m[49m[48;2;255;255;255m       [0m
+                       |[39m[48;2;255;255;255m[49m[48;2;255;255;255m       [0m
                        |""".stripMargin
     assertEquals(expectedPM, pm.toString)
   }
