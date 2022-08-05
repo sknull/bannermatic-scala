@@ -38,11 +38,13 @@ case class PixelMatrix(
 
   private val nAsciiArtChars: Int = asciiArtChars.length
 
+  initMatrix(width, height)
+
   if (value.nonEmpty) {
-    initMatrix(width, height, value, offX, offY, grow)
+    loadRows(value, offX, offY, grow, nAsciiArtChars > 0)
   } else if (other.nonEmpty) {
     val o = other.get
-    initMatrix(width, height, o.getValue, offX, offY, grow)
+    loadRows(o.getValue, offX, offY, grow, nAsciiArtChars > 0)
     for (y <- 0 until o.height) {
       for (x <- 0 until o.width) {
         val op = o.matrix(x)(y)
@@ -50,8 +52,6 @@ case class PixelMatrix(
         setBgColor(x + offX)(y + offY)(op.bgColor)
       }
     }
-  } else {
-    initMatrix(width, height)
   }
 
   override def clone(): PixelMatrix = {
@@ -60,38 +60,59 @@ case class PixelMatrix(
     c
   }
 
-  private def initMatrix(width: Int = 0, height: Int = 0, value: Array[Array[String]] = Array[Array[String]](), offX: Int = 0, offY: Int = 0, grow: Boolean = true): PixelMatrix = {
+  private def initMatrix(width: Int = 0, height: Int = 0): PixelMatrix = {
     val isAsciiArt = nAsciiArtChars > 0
-    if (value.nonEmpty) {
-      val w = value.map(_.length).max
-      this.width = if (grow) Math.max(width, w) else Math.min(width, w)
-      val h = value.length
-      this.height = if (grow) Math.max(height, h) else Math.min(height, h)
-      this.matrix = Array.ofDim[Pixel](width, height)
-      for (y <- 0 until this.height) for (x <- 0 until this.width) this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
-      if (grow) {
-        for (y <- 0 until h) {
-          val row = value(y)
-          val w = row.length
-          for (x <- 0 until w) {
-            this.matrix(offX + x)(offY + y) = Pixel(fgColor, bgColor, row(x), isAsciiArt, grayscale)
-          }
-        }
+    this.width = width
+    this.height = height
+    this.matrix = Array.ofDim[Pixel](width, height)
+    for (y <- 0 until height) {
+      for (x <- 0 until width) {
+        this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
       }
-      else for (y <- 0 until this.height) for (x <- 0 until this.width) this.matrix(x)(y) = Pixel(fgColor, bgColor, value(y + offY)(x + offX), isAsciiArt, grayscale)
-    } else {
-      this.width = width
-      this.height = height
-      this.matrix = Array.ofDim[Pixel](width, height)
-      for (y <- 0 until height) for (x <- 0 until width) this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
     }
     this
   }
 
+  private def loadRows(value: Array[Array[String]], offX: Int, offY: Int, grow: Boolean, isAsciiArt: Boolean): Unit = {
+    val w = value.map(_.length).max
+    this.width = if (grow) Math.max(width, w) else Math.min(width, w)
+    val h = value.length
+    this.height = if (grow) Math.max(height, h) else Math.min(height, h)
+    this.matrix = Array.ofDim[Pixel](width, height)
+    for (y <- 0 until this.height) {
+      for (x <- 0 until this.width) {
+        this.matrix(x)(y) = Pixel(fgColor, bgColor, char, isAsciiArt, grayscale)
+      }
+    }
+    if (grow) {
+      for (y <- 0 until h) {
+        val row = value(y)
+        val w = row.length
+        for (x <- 0 until w) {
+          this.matrix(offX + x)(offY + y) = Pixel(fgColor, bgColor, row(x), isAsciiArt, grayscale)
+        }
+      }
+    } else {
+      for (y <- 0 until this.height) {
+        for (x <- 0 until this.width) {
+          this.matrix(x)(y) = Pixel(fgColor, bgColor, value(y + offY)(x + offX), isAsciiArt, grayscale)
+        }
+      }
+    }
+  }
+
   override def toString: String = {
     val rows = mutable.ListBuffer[String]()
-    val prefix = if (grayscale && nAsciiArtChars > 0) "" else fgColor.toString + bgColor.toString + flags.mkString("")
-    val suffix = if (grayscale && nAsciiArtChars > 0) "" else PixelMatrix.RESET
+    val prefix = if (grayscale && nAsciiArtChars > 0) {
+      ""
+    } else {
+      fgColor.toString + bgColor.toString + flags.mkString("")
+    }
+    val suffix = if (grayscale && nAsciiArtChars > 0) {
+      ""
+    } else {
+      PixelMatrix.RESET
+    }
     for (y <- 0 until height) {
       var row = prefix
       var prevPixel = Pixel()
@@ -101,7 +122,9 @@ case class PixelMatrix(
           row += pixel.toString
           prevPixel = pixel
         }
-        else row += pixel.char
+        else {
+          row += pixel.char
+        }
       }
       rows += row
     }
