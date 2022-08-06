@@ -1,5 +1,7 @@
 package de.visualdigits.bannermatic.model.pixelmatrix
 
+import de.visualdigits.bannermatic.model.pixelmatrix.Color.THRESHOLD_ALPHA
+
 case class Color(
                   name: String = "",
                   var isBackground: Boolean = false,
@@ -56,13 +58,15 @@ case class Color(
   def fade(bgColor: Color): Color = {
     val a = alpha / 255.0
     val ia = 1.0 - alpha / 255.0
-    val c = Color(
+    Color(
       red = (red * a + bgColor.red * ia).toInt,
       green = (green * a + bgColor.green * ia).toInt,
-      blue = (blue * a + bgColor.blue * ia).toInt
+      blue = (blue * a + bgColor.blue * ia).toInt,
+      alpha = (Math.min(1.0, a + bgColor.alpha / 255.0) * 255).toInt
     )
-    c
   }
+
+  def isTransparent: Boolean = alpha < THRESHOLD_ALPHA
 
   override def clone(): Color = {
     Color(name, isBackground, red, green, blue, alpha)
@@ -88,23 +92,26 @@ case class Color(
 }
 
 object Color {
-  val RED: Color = Color("RED" )
-  val GREEN: Color = Color("GREEN")
-  val YELLOW: Color = Color("YELLOW")
-  val BLUE: Color = Color("BLUE")
-  val MAGENTA: Color = Color("MAGENTA")
-  val CYAN: Color  = Color("CYAN")
-  val LIGHT_GRAY: Color = Color("LIGHT_GRAY")
-  val DEFAULT: Color = Color("DEFAULT")
-  val DARK_GRAY: Color = Color("DARK_GRAY")
-  val LIGHT_RED: Color = Color("LIGHT_RED")
-  val LIGHT_GREEN: Color = Color("LIGHT_GREEN")
-  val LIGHT_YELLOW: Color = Color("LIGHT_YELLOW")
-  val LIGHT_BLUE: Color = Color("LIGHT_BLUE")
-  val LIGHT_MAGENTA: Color = Color("LIGHT_MAGENTA")
-  val LIGHT_CYAN: Color = Color("LIGHT_CYAN")
-  val WHITE: Color = Color(red=255, green=255, blue=255)
-  val BLACK: Color = Color()
+
+  val THRESHOLD_ALPHA = 4
+
+  val RED: Color = Color(name = "RED", red = 255, alpha = 255)
+  val GREEN: Color = Color(name = "GREEN", green = 255, alpha = 255)
+  val YELLOW: Color = Color(name = "YELLOW", red = 255, green = 255, alpha = 255)
+  val BLUE: Color = Color(name = "BLUE", blue = 255, alpha = 255)
+  val MAGENTA: Color = Color(name = "MAGENTA", red = 255, blue = 255, alpha = 255)
+  val CYAN: Color  = Color(name = "CYAN", green = 255, blue = 255, alpha = 255)
+  val LIGHT_GRAY: Color = Color(name = "LIGHT_GRAY", alpha = 255)
+  val DEFAULT: Color = Color(name = "DEFAULT", alpha = 0)
+  val DARK_GRAY: Color = Color(name = "DARK_GRAY", alpha = 255)
+  val LIGHT_RED: Color = Color(name = "LIGHT_RED", alpha = 255)
+  val LIGHT_GREEN: Color = Color(name = "LIGHT_GREEN", alpha = 255)
+  val LIGHT_YELLOW: Color = Color(name = "LIGHT_YELLOW", alpha = 255)
+  val LIGHT_BLUE: Color = Color(name = "LIGHT_BLUE", alpha = 255)
+  val LIGHT_MAGENTA: Color = Color(name = "LIGHT_MAGENTA", alpha = 255)
+  val LIGHT_CYAN: Color = Color(name = "LIGHT_CYAN", alpha = 255)
+  val WHITE: Color = Color(red=255, green=255, blue=255, alpha = 255)
+  val BLACK: Color = Color(alpha = 255)
 
   val COLOR_CODES: Map[String, Int] = Map[String, Int](
     "BLACK" -> 30,

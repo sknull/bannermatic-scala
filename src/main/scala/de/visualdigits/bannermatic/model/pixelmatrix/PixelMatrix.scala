@@ -68,16 +68,13 @@ case class PixelMatrix(
     for (y <- 0 until height) for (x <- 0 until width) {
       val c = new awt.Color(imageScaled.getRGB(x, y), colorModel.hasAlpha)
       val alpha = c.getAlpha
-      val pixelIsNearBlack = Seq(c.getRed, c.getGreen, c.getBlue).forall(_ < PixelMatrix.THRESHOLD_ALPHA)
-      val pixelIsNearTransparent = colorModel.hasAlpha && c.getAlpha < PixelMatrix.THRESHOLD_ALPHA
-      val pixelColor = if (pixelIsNearTransparent || pixelIsNearBlack) {
+      val color = Color(red = c.getRed, green = c.getGreen, blue = c.getBlue, alpha = alpha).fade(bgColor)
+      val gray = (color.toGray * 255).toInt
+      val pixelColor = if (color.isTransparent) {
         Color("default")
+      } else if (grayscale) {
+        Color(red = gray, green = gray, blue = gray, alpha = alpha)
       } else {
-        var color = Color(red = c.getRed, green = c.getGreen, blue = c.getBlue, alpha = alpha).fade(bgColor)
-        if (grayscale) {
-          val gray = (color.toGray * 255).toInt
-          color = Color(red = gray, green = gray, blue = gray, alpha = alpha)
-        }
         color
       }
       if (nAsciiArtChars == 0) {
@@ -90,7 +87,7 @@ case class PixelMatrix(
         if (!grayscale) {
           setFgColor(x)(y)(pixelColor)
         }
-        setChar(x)(y)(asciiArtChars((pixelColor.toGray * nAsciiArtChars).toInt))
+        setChar(x)(y)(asciiArtChars((gray * nAsciiArtChars).toInt))
       }
     }
     this
