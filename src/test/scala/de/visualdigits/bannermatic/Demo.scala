@@ -33,8 +33,8 @@ class Demo extends FunSuite {
     val imageMatrix = renderImage(
       imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/qnap-logo.png").toURI),
       width = 90,
-//      asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
-            asciiArtChars = Array(),
+      grayscale = true,
+      asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
     )
     val textMatrix = renderText(
       text = "fileserver",
@@ -47,7 +47,7 @@ class Demo extends FunSuite {
     )
 
     val banner = imageMatrix.toString + "\n" + textMatrix.toString
-//    println(banner)
+    println(banner)
 //    Files.write(Paths.get("C:\\Users\\sknull\\banner\\banner.txt"), banner.getBytes(StandardCharsets.UTF_8))
   }
 

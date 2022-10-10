@@ -74,7 +74,8 @@ case class PixelMatrix(
       val c = new awt.Color(imageScaled.getRGB(x, y), colorModel.hasAlpha)
       val alpha = c.getAlpha
       val color = Color(red = c.getRed, green = c.getGreen, blue = c.getBlue, alpha = alpha).fade(bgColor)
-      val gray = (color.toGray * 255).toInt
+      val colorGray = color.toGray
+      val gray = (colorGray * 255).toInt
       val pixelColor = if (color.isTransparent) {
         Color("default")
       } else if (grayscale) {
@@ -92,7 +93,7 @@ case class PixelMatrix(
         if (!grayscale) {
           setFgColor(x)(y)(pixelColor)
         }
-        setChar(x)(y)(asciiArtChars((gray * nAsciiArtChars).toInt))
+        setChar(x)(y)(asciiArtChars((colorGray * nAsciiArtChars).toInt))
       }
     }
     this
@@ -238,7 +239,7 @@ case class PixelMatrix(
   }
 
   private def loadMatrix(o: PixelMatrix, offX: Int = 0, offY: Int = 0): PixelMatrix = {
-    loadRows(value = o.getValue, offX = offX, offY = offY, grow = true, isAsciiArt = nAsciiArtChars > 0)
+    loadRows(value = o.getValue, offX = offX, offY = offY, isAsciiArt = nAsciiArtChars > 0)
     for (y <- 0 until o.height) {
       for (x <- 0 until o.width) {
         val op = o.matrix(x)(y)
@@ -396,7 +397,6 @@ object PixelMatrix {
   val ASCII_ART_CHARS_PERL: Array[String] = " .,:;+=oaeOAM#$@".toCharArray.map(_.toString)
   val ASCII_ART_CHARS_SHORT: Array[String] = "@%#*+=-:. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_SMILEYS: Array[String] = Array(" ", "🫥", "〠", "👌", "👐", "+", "*", "%", "&", "〠", "I", "O", "M", "#", "😍")
-""
 
   def apply(config: Config): PixelMatrix = {
     var textBanner = stringOption(config.text).map(text =>

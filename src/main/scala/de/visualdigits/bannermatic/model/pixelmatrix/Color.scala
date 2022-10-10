@@ -52,7 +52,7 @@ case class Color(
    * @return Double
    */
   def toGray: Double = {
-    red / 255.0 *0.3 + green / 255.0 * 0.59 + blue / 255.0 * 0.11
+    red / 255.0 * 0.3 + green / 255.0 * 0.59 + blue / 255.0 * 0.11
   }
 
   def fade(bgColor: Color): Color = {
