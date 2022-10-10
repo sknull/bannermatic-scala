@@ -10,6 +10,7 @@ import java.awt
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import javax.imageio.ImageIO
 import scala.collection.mutable
@@ -60,6 +61,10 @@ case class PixelMatrix(
       rows += row
     }
     rows.mkString(suffix + "\n") + suffix + "\n"
+  }
+
+  def saveToFile(file: File): Unit  = {
+    Files.write(file.toPath, toString.getBytes(StandardCharsets.UTF_8))
   }
 
   def loadImage(image: BufferedImage, width: Int, height: Int, isBackground: Boolean, grayscale: Boolean): PixelMatrix = {
@@ -407,8 +412,6 @@ object PixelMatrix {
     val imageBanner = config.image.map(image => renderImage(
       imageFile = image,
       width = config.imageWidth,
-      char = " ",
-      isBackground = true,
       pixelRatio = config.pixelRatio,
       asciiArtChars = config.asciiArtChars,
       grayscale = config.grayscale,
@@ -451,12 +454,12 @@ object PixelMatrix {
   def renderImage(
              imageFile: File,
              width: Int,
-             char: String,
-             isBackground: Boolean,
-             pixelRatio: Double,
+             char: String = " ",
+             isBackground: Boolean = true,
+             pixelRatio: Double = 0.4,
              asciiArtChars: Array[String],
-             grayscale: Boolean,
-             edgeDetection: Boolean
+             grayscale: Boolean = false,
+             edgeDetection: Boolean = true
            ): PixelMatrix = {
     val image = ImageIO.read(imageFile)
     val ratio = pixelRatio * image.getHeight / image.getWidth
@@ -480,6 +483,5 @@ object PixelMatrix {
     val finalWidth = Math.max(width, rows.map(_.length).max)
     val pm = PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
     pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0)
-
   }
 }

@@ -8,24 +8,33 @@ import org.scalatest.FunSuite
 import org.scalatestplus.junit.JUnitRunner
 
 import java.io.File
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths}
 
 
 @RunWith(classOf[JUnitRunner])
 class Demo extends FunSuite {
 
-  test("create raspberry banner") {
+  test("create micronaut banner") {
+    val config = Config(
+      image = Some(new File(ClassLoader.getSystemClassLoader.getResource("images/rocket.png").toURI)),
+      text = "SMART OVEN DEMO",
+      textWidth = 120,
+      imageWidth = 40,
+      textPlacement = "outside",
+      align = "right",
+      valign = "middle",
+      color = "#ffffff",
+    )
+    val banner: PixelMatrix = PixelMatrix(config)
+    banner.saveToFile(new File("./src/test/resources/banners/micronaut-banner.txt"))
+//    println(banner)
+  }
+
+  ignore("create raspberry banner") {
     val imageMatrix = renderImage(
       imageFile = new File(ClassLoader.getSystemClassLoader.getResource("images/qnap-logo.png").toURI),
       width = 90,
-      char = " ",
-      isBackground = true,
-      pixelRatio = 0.4,
 //      asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
             asciiArtChars = Array(),
-      grayscale = false,
-      edgeDetection = true
     )
     val textMatrix = renderText(
       text = "fileserver",
@@ -42,7 +51,7 @@ class Demo extends FunSuite {
 //    Files.write(Paths.get("C:\\Users\\sknull\\banner\\banner.txt"), banner.getBytes(StandardCharsets.UTF_8))
   }
 
-  test("demo") {
+  ignore("demo") {
     val image: Option[File] = Some(new File(ClassLoader.getSystemClassLoader.getResource("images/raspberry/RaspberryPi_Logo_30.png").toURI))
     val config = Config(
       image = image,
