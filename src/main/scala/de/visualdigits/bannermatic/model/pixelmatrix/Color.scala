@@ -35,12 +35,16 @@ case class Color(
   override def toString: String = {
     val uname = name.toUpperCase()
     if (name.nonEmpty && Color.COLOR_CODES.contains(uname)) {
-      var ansiCode =  Color.COLOR_CODES(uname)
-      if (isBackground) ansiCode += 10
+      var ansiCode = Color.COLOR_CODES(uname)
+      if (isBackground) {
+        ansiCode += 10
+      }
       PixelMatrix.ESCAPE + "[%dm".format(ansiCode)
     } else {
       var ansiCode = PixelMatrix.CODE_FG
-      if (isBackground) ansiCode += 10
+      if (isBackground) {
+        ansiCode += 10
+      }
       PixelMatrix.ESCAPE + "[%d;2;%d;%d;%dm".format(ansiCode, red, green, blue)
     }
   }
@@ -100,7 +104,7 @@ object Color {
   val YELLOW: Color = Color(name = "YELLOW", red = 255, green = 255, alpha = 255)
   val BLUE: Color = Color(name = "BLUE", blue = 255, alpha = 255)
   val MAGENTA: Color = Color(name = "MAGENTA", red = 255, blue = 255, alpha = 255)
-  val CYAN: Color  = Color(name = "CYAN", green = 255, blue = 255, alpha = 255)
+  val CYAN: Color = Color(name = "CYAN", green = 255, blue = 255, alpha = 255)
   val LIGHT_GRAY: Color = Color(name = "LIGHT_GRAY", alpha = 255)
   val DEFAULT: Color = Color(name = "DEFAULT", alpha = 0)
   val DARK_GRAY: Color = Color(name = "DARK_GRAY", alpha = 255)
@@ -110,7 +114,7 @@ object Color {
   val LIGHT_BLUE: Color = Color(name = "LIGHT_BLUE", alpha = 255)
   val LIGHT_MAGENTA: Color = Color(name = "LIGHT_MAGENTA", alpha = 255)
   val LIGHT_CYAN: Color = Color(name = "LIGHT_CYAN", alpha = 255)
-  val WHITE: Color = Color(red=255, green=255, blue=255, alpha = 255)
+  val WHITE: Color = Color(red = 255, green = 255, blue = 255, alpha = 255)
   val BLACK: Color = Color(alpha = 255)
 
   val COLOR_CODES: Map[String, Int] = Map[String, Int](

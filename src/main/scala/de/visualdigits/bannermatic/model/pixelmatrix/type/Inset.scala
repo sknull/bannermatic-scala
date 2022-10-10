@@ -12,7 +12,10 @@ object Inset extends Enum[Inset] {
   val values: IndexedSeq[Inset] = findValues
 
   case object top extends Inset
+
   case object right extends Inset
+
   case object bottom extends Inset
+
   case object left extends Inset
 }

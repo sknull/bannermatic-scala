@@ -18,6 +18,8 @@ object Direction extends Enum[Direction] {
   }
 
   case object auto extends Direction
+
   case object left_to_right extends Direction
+
   case object right_to_left extends Direction
 }

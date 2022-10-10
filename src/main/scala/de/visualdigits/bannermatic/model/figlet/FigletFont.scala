@@ -31,23 +31,38 @@ case class FigletFont(
     val ins: InputStream = ClassLoader.getSystemClassLoader.getResourceAsStream(resourcePath)
     var lines: mutable.Stack[String] = readLines(ins)
     val header: String = lines.head
-    if (MAGIC_NUMBER.findAllIn(header).isEmpty) throw new IllegalArgumentException("Invalid font: " + resourcePath)
+    if (MAGIC_NUMBER.findAllIn(header).isEmpty) {
+      throw new IllegalArgumentException(s"Invalid font: $resourcePath")
+    }
     val headerParts = MAGIC_NUMBER.replaceAllIn(header, "").split(" ")
     val n = headerParts.length
-    if (n < 6) throw new IllegalArgumentException("Invalid header for font: " + resourcePath)
+    if (n < 6) {
+      throw new IllegalArgumentException(s"Invalid header for font: $resourcePath")
+    }
     this.hardBlank = headerParts(0)(0).toString
     this.height = headerParts(1).toInt
     this.baseLine = headerParts(2).toInt
     this.maxLength = headerParts(3).toInt
     this.oldLayout = headerParts(4).toInt
     this.commentLines = headerParts(5).toInt
-    this.printDirection = if (n > 6) headerParts(6).toInt else 0
-
-    var fullLayout = if (n > 7) headerParts(7).toInt else 0
+    this.printDirection = if (n > 6) {
+      headerParts(6).toInt
+    } else {
+      0
+    }
+    var fullLayout = if (n > 7) {
+      headerParts(7).toInt
+    } else {
+      0
+    }
     if (fullLayout == 0) {
-      if (this.oldLayout == 0) fullLayout = 64
-      else if (this.oldLayout < 0) fullLayout = 0
-      else fullLayout = (this.oldLayout & 31) | 128
+      if (this.oldLayout == 0) {
+        fullLayout = 64
+      } else if (this.oldLayout < 0) {
+        fullLayout = 0
+      } else {
+        fullLayout = (this.oldLayout & 31) | 128
+      }
     }
     this.smushMode = fullLayout
 
@@ -63,9 +78,13 @@ case class FigletFont(
     while (lines.nonEmpty) {
       val line = lines.head.trim
       val ii = line.split(" ")(0)
-      val idx: Option[Int] = if (isNumeric(ii)) Some(Integer.valueOf(ii).toInt)
-      else if (HEX_MATCH.findFirstIn(ii).nonEmpty) Some(Integer.valueOf(ii.substring(2), 16).toInt)
-      else Option.empty
+      val idx: Option[Int] = if (isNumeric(ii)) {
+        Some(Integer.valueOf(ii).toInt)
+      } else if (HEX_MATCH.findFirstIn(ii).nonEmpty) {
+        Some(Integer.valueOf(ii.substring(2), 16).toInt)
+      } else {
+        Option.empty
+      }
       if (idx.nonEmpty) {
         lines.pop
         i = idx.get
@@ -80,7 +99,11 @@ case class FigletFont(
   }
 
   def throwsNumberFormatException(f: => Any): Boolean = {
-    try { f; false } catch { case e: NumberFormatException => true }
+    try {
+      f; false
+    } catch {
+      case _: NumberFormatException => true
+    }
   }
 
   def readChar(i: Int, lines: mutable.Stack[String]): Unit = {
@@ -93,7 +116,9 @@ case class FigletFont(
         end = END_MARKER.findFirstIn(line).map(x => new Regex(Regex.quote(x) + "{1,2}$"))
       }
       end.foreach(x => line = x.replaceAllIn(line, ""))
-      if (line.length > width) width = line.length
+      if (line.length > width) {
+        width = line.length
+      }
       chrs.addOne(line)
     }
     if (chrs.mkString("").nonEmpty) {

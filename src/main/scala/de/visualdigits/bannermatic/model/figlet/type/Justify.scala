@@ -19,7 +19,10 @@ object Justify extends Enum[Justify] {
   }
 
   case object auto extends Justify
+
   case object left extends Justify
+
   case object center extends Justify
+
   case object right extends Justify
 }

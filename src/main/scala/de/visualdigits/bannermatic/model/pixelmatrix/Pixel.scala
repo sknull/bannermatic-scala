@@ -12,12 +12,12 @@ case class Pixel(
   this.bgColor.isBackground = true
 
   override def clone(): Pixel = {
-     Pixel(fgColor.clone(), bgColor.clone(), char, asciiArt = asciiArt, grayscale = grayscale)
+    Pixel(fgColor.clone(), bgColor.clone(), char, asciiArt = asciiArt, grayscale = grayscale)
   }
 
   override def toString: String = {
     if (grayscale && asciiArt) {
-      char.toString
+      char
     } else {
       fgColor.toString() + bgColor.toString() + char
     }

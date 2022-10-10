@@ -5,11 +5,11 @@ import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import scala.collection.mutable
 
 case class Figlet(
-              fontName: String = "default",
-              width: Int = 80,
-              direction: Direction = Direction.auto,
-              justify: Justify = Justify.auto
-            ) {
+                   fontName: String = "default",
+                   width: Int = 80,
+                   direction: Direction = Direction.auto,
+                   justify: Justify = Justify.auto
+                 ) {
 
   private var text: IndexedSeq[Int] = _
   private var font: FigletFont = _
@@ -27,7 +27,7 @@ case class Figlet(
 
   private var smusher: FigletSmusher = _
 
-  this.font = FigletFont("fonts/"+ fontName + ".flf")
+  this.font = FigletFont(s"fonts/$fontName.flf")
   this.blankMarkers = mutable.Stack()
   this.buffer = Array.fill[String](this.font.height)("")
   this.smusher = FigletSmusher(direction, this.font)
@@ -38,7 +38,9 @@ case class Figlet(
       addCharToProduct()
       iterator += 1
     }
-    if (buffer(0).nonEmpty) queue.addOne(buffer)
+    if (buffer(0).nonEmpty) {
+      queue.addOne(buffer)
+    }
     var stringAcc = ""
     queue.foreach(buffer => {
       val b: Array[String] = justifyString(justify, buffer)
@@ -57,18 +59,25 @@ case class Figlet(
       val curChar = font.chars.get(text(iterator))
       if (curChar.nonEmpty) {
         curCharWidth = font.width.getOrElse(text(iterator), 0)
-        if (width < curCharWidth) throw new IllegalStateException("No space left to print char")
-        maxSmush = if (curChar.nonEmpty) smusher.currentSmushAmount(buffer, curChar.get, curCharWidth, prevCharWidth) else 0
-        currentTotalWidth = buffer(0).length + curCharWidth- maxSmush
-        if (c == ' ') blankMarkers.addOne(tuple)
-        if (c == '\n') {
-          blankMarkers.addOne(tuple)
-          handleNewline()
+        if (width < curCharWidth) {
+          throw new IllegalStateException("No space left to print char")
         }
-        if (currentTotalWidth >= width) handleNewline()
-        else for (row <- 0 until font.height) {
-          val(addLeft, addRight) = smusher.smushRow(buffer(row), curChar.get, row, maxSmush, curCharWidth, prevCharWidth)
-          buffer(row) = addLeft + addRight.substring(maxSmush)
+        maxSmush = if (curChar.nonEmpty) {
+          smusher.currentSmushAmount(buffer, curChar.get, curCharWidth, prevCharWidth)
+        } else {
+          0
+        }
+        currentTotalWidth = buffer(0).length + curCharWidth - maxSmush
+        if (c == ' ') {
+          blankMarkers.addOne(tuple)
+        }
+        if (currentTotalWidth >= width) {
+          handleNewline()
+        } else {
+          for (row <- 0 until font.height) {
+            val (addLeft, addRight) = smusher.smushRow(buffer(row), curChar.get, row, maxSmush, curCharWidth, prevCharWidth)
+            buffer(row) = addLeft + addRight.substring(maxSmush)
+          }
         }
         prevCharWidth = curCharWidth
       }
@@ -77,7 +86,7 @@ case class Figlet(
 
   def handleNewline(): Unit = {
     if (blankMarkers.nonEmpty) {
-      val(savedBuffer, savedIterator) = blankMarkers.pop
+      val (savedBuffer, savedIterator) = blankMarkers.pop
       queue.addOne(savedBuffer)
       iterator = savedIterator
     } else {
@@ -90,7 +99,9 @@ case class Figlet(
     blankMarkers = mutable.Stack[(Array[String], Int)]()
     prevCharWidth = 0
     val curChar: Option[List[String]] = font.chars.get(text(iterator))
-    if (curChar.nonEmpty) maxSmush = smusher.currentSmushAmount(buffer, curChar.get, curCharWidth, prevCharWidth)
+    if (curChar.nonEmpty) {
+      maxSmush = smusher.currentSmushAmount(buffer, curChar.get, curCharWidth, prevCharWidth)
+    }
   }
 
   def justifyString(justify: Justify, buffer: Array[String]): Array[String] = {

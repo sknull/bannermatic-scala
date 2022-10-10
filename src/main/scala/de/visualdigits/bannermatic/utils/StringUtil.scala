@@ -10,36 +10,45 @@ object StringUtil {
    * Wraps the given string value into an option and also treats empty strings as None.
    *
    * @param value The string value.
-   *
    * @return Option[String]
    */
   def stringOption(value: String): Option[String] = {
     val option = Option(value)
-    if (option.getOrElse("").nonEmpty) option else None
+    if (option.getOrElse("").nonEmpty) {
+      option
+    } else {
+      None
+    }
   }
 
   /**
    * Wraps the given long value into an option and also treats 0 values as None.
    *
    * @param value The long value.
-   *
    * @return Option[Long]
    */
   def longOption(value: Long): Option[Long] = {
     val option = Option(value)
-    if (option.getOrElse(0) != 0) option else None
+    if (option.getOrElse(0) != 0) {
+      option
+    } else {
+      None
+    }
   }
 
   /**
    * Wraps the given long value into an option and also treats 0 values as None.
    *
    * @param value The int value.
-   *
    * @return Option[Long]
    */
   def intOption(value: Int): Option[Int] = {
     val option = Option(value)
-    if (option.getOrElse(0) != 0) option else None
+    if (option.getOrElse(0) != 0) {
+      option
+    } else {
+      None
+    }
   }
 
   /**
@@ -47,7 +56,6 @@ object StringUtil {
    *
    * @param resource The resource to obtain.
    * @param encoding The encoding to use (defaults to UTF-8).
-   *
    * @return String
    */
   def loadResourceAsString(resource: String, encoding: Charset = StandardCharsets.UTF_8): String = new String(loadFromFile(resource), encoding)
@@ -62,7 +70,9 @@ object StringUtil {
     val ins = StringUtil.getClass.getClassLoader.getResourceAsStream(resource)
     if (ins != null) {
       getBytesFromInputSteam(ins)
-    } else Array()
+    } else {
+      Array()
+    }
   }
 
   private def getBytesFromInputSteam(input: InputStream): Array[Byte] = {
@@ -94,7 +104,9 @@ object StringUtil {
   }
 
   private def getBytesFromBufferedInputStream(bInput: BufferedInputStream): Array[Byte] = {
-    if (bInput == null) return null
+    if (bInput == null) {
+      return null
+    }
     val theBytes = new Array[Byte](bInput.available)
     bInput.read(theBytes)
     theBytes

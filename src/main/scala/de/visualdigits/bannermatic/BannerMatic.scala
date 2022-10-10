@@ -9,7 +9,9 @@ object BannerMatic {
       case Some(config) =>
         println(config)
         val banner = PixelMatrix(config).toString
-        if (config.outputFile.isEmpty && banner.nonEmpty) println(banner)
+        if (config.outputFile.isEmpty && banner.nonEmpty) {
+          println(banner)
+        }
       case _ =>
     }
   }

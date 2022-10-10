@@ -20,5 +20,6 @@ object Placement extends Enum[Placement] {
   }
 
   case object inside extends Placement
+
   case object outside extends Placement
 }

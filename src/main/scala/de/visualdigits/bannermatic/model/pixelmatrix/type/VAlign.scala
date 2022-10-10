@@ -21,6 +21,8 @@ object VAlign extends Enum[VAlign] {
   }
 
   case object top extends VAlign
+
   case object middle extends VAlign
+
   case object bottom extends VAlign
 }

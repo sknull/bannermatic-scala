@@ -62,7 +62,7 @@ case class PixelMatrix(
     rows.mkString(suffix + "\n") + suffix + "\n"
   }
 
-  def saveToFile(file: File): Unit  = {
+  def saveToFile(file: File): Unit = {
     Files.write(file.toPath, toString.getBytes(StandardCharsets.UTF_8))
   }
 
@@ -172,7 +172,11 @@ case class PixelMatrix(
       offX = horizontal match {
         case Align.left => 0
         case Align.center => offX / 2
-        case _ => if (horizontal.v > 0) horizontal.v else offX
+        case _ => if (horizontal.v > 0) {
+          horizontal.v
+        } else {
+          offX
+        }
       }
     }
 
@@ -189,7 +193,11 @@ case class PixelMatrix(
       offY = vertical match {
         case VAlign.top => 0
         case VAlign.middle => offY / 2
-        case _ => if (vertical.v > 0) vertical.v else offY
+        case _ => if (vertical.v > 0) {
+          vertical.v
+        } else {
+          offY
+        }
       }
     }
 
@@ -204,7 +212,11 @@ case class PixelMatrix(
   }
 
   def rows(): Int = {
-    if (matrix.nonEmpty) matrix(0).length else 0
+    if (matrix.nonEmpty) {
+      matrix(0).length
+    } else {
+      0
+    }
   }
 
   def columns(): Int = {
@@ -212,7 +224,7 @@ case class PixelMatrix(
   }
 
   def rowNonEmpty(row: Int, char: String = " "): Boolean = {
-    matrix.exists(_(row).char != char)
+    matrix.exists(_ (row).char != char)
   }
 
   def columnNonEmpty(column: Int, char: String = " "): Boolean = {
@@ -252,9 +264,17 @@ case class PixelMatrix(
   private def loadRows(value: Array[Array[String]], offX: Int = 0, offY: Int = 0, grow: Boolean = true, isAsciiArt: Boolean = false): PixelMatrix = {
     if (value.nonEmpty) {
       val w = value.map(_.length).max
-      this.width = if (grow) Math.max(width, w) else Math.min(width, w)
+      this.width = if (grow) {
+        Math.max(width, w)
+      } else {
+        Math.min(width, w)
+      }
       val h = value.length
-      this.height = if (grow) Math.max(height, h) else Math.min(height, h)
+      this.height = if (grow) {
+        Math.max(height, h)
+      } else {
+        Math.min(height, h)
+      }
       this.matrix = Array.ofDim[Pixel](width, height)
       for (y <- 0 until this.height) {
         for (x <- 0 until this.width) {
@@ -301,10 +321,18 @@ case class PixelMatrix(
     val nc = columns() - 1
     val nr = rows() - 1
     val (left, top, right, bottom) = boundingBox(char)
-    if (top > 0) p = p.trim(Inset.top, top)
-    if (bottom < nr) p = p.trim(Inset.bottom, nr - bottom)
-    if (left > 0) p = p.trim(Inset.left, left)
-    if (right < nc) p = p.trim(Inset.right, nc - right)
+    if (top > 0) {
+      p = p.trim(Inset.top, top)
+    }
+    if (bottom < nr) {
+      p = p.trim(Inset.bottom, nr - bottom)
+    }
+    if (left > 0) {
+      p = p.trim(Inset.left, left)
+    }
+    if (right < nc) {
+      p = p.trim(Inset.right, nc - right)
+    }
     p
   }
 
@@ -347,7 +375,9 @@ case class PixelMatrix(
 
   private def findFirstNonEmptyColumn(char: String = " "): Int = {
     for (column <- 0 until columns()) {
-      if (columnNonEmpty(column, char)) return column
+      if (columnNonEmpty(column, char)) {
+        return column
+      }
     }
     0
   }
@@ -355,14 +385,18 @@ case class PixelMatrix(
   private def findLastNonEmptyColumn(char: String = " "): Int = {
     val n = columns() - 1
     for (column <- n to 0 by -1) {
-      if (columnNonEmpty(column, char)) return column
+      if (columnNonEmpty(column, char)) {
+        return column
+      }
     }
     n
   }
 
   private def findFirstNonEmptyRow(char: String = " "): Int = {
     for (row <- 0 until rows()) {
-      if (rowNonEmpty(row, char)) return row
+      if (rowNonEmpty(row, char)) {
+        return row
+      }
     }
     0
   }
@@ -370,7 +404,9 @@ case class PixelMatrix(
   private def findLastNonEmptyRow(char: String = " "): Int = {
     val n = rows() - 1
     for (row <- n to 0 by -1) {
-      if (rowNonEmpty(row, char)) return row
+      if (rowNonEmpty(row, char)) {
+        return row
+      }
     }
     n
   }
@@ -475,15 +511,15 @@ object PixelMatrix {
   }
 
   def renderImage(
-             imageFile: File,
-             width: Int,
-             char: String = " ",
-             isBackground: Boolean = true,
-             pixelRatio: Double = 0.4,
-             asciiArtChars: Array[String],
-             grayscale: Boolean = false,
-             edgeDetection: Boolean = true
-           ): Option[PixelMatrix] = {
+                   imageFile: File,
+                   width: Int,
+                   char: String = " ",
+                   isBackground: Boolean = true,
+                   pixelRatio: Double = 0.4,
+                   asciiArtChars: Array[String],
+                   grayscale: Boolean = false,
+                   edgeDetection: Boolean = true
+                 ): Option[PixelMatrix] = {
     val image = ImageIO.read(imageFile)
     val ratio = pixelRatio * image.getHeight / image.getWidth
     val height = (width * ratio * 10 + 0.5).toInt / 10
@@ -492,14 +528,14 @@ object PixelMatrix {
   }
 
   def renderText(
-             text: String,
-             width: Int,
-             font: String,
-             fgColor: Color,
-             bgColor: Color,
-             direction: Direction,
-             justify: Justify
-           ): Option[PixelMatrix] = {
+                  text: String,
+                  width: Int,
+                  font: String,
+                  fgColor: Color,
+                  bgColor: Color,
+                  direction: Direction,
+                  justify: Justify
+                ): Option[PixelMatrix] = {
     val figlet = Figlet(font, width, direction, justify)
     val raw = figlet.renderText(text)
     val rows = raw.split("\n").map(_.toCharArray.map(_.toString))

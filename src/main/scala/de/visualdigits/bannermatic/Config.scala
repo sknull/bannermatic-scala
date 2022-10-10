@@ -6,7 +6,6 @@ import scopt.OParser
 
 import java.io.File
 
-
 case class Config(
                    text: String = "",
                    textWidth: Int = 80,
@@ -39,7 +38,8 @@ object Config extends scala.AnyRef {
       head("bannermatic", "1.0.0-SNAPSHOT"),
       opt[String]('c', "color")
         .action((x, c) => c.copy(color = x))
-        .text("""prints text with passed foreground color,
+        .text(
+          """prints text with passed foreground color,
                            --color=foreground:background\t
                            --color=:background\t\t\t# only background
                            --color=foreground | foreground:\t# only foreground
@@ -72,9 +72,9 @@ object Config extends scala.AnyRef {
       opt[String]('p', "text-placement")
         .action((x, c) => c.copy(textPlacement = x))
         .text("set text placement, one of: inside, outside"),
-//      opt[String]('M', "margin")
-//        .action((x, c) => c.copy(margin = x))
-//        .text("set margin between image and text in columns"),
+      //      opt[String]('M', "margin")
+      //        .action((x, c) => c.copy(margin = x))
+      //        .text("set margin between image and text in columns"),
       opt[File]('i', "image")
         .action((x, c) => c.copy(image = Some(x)))
         .text("The image"),
@@ -84,12 +84,12 @@ object Config extends scala.AnyRef {
       opt[File]('o', "output-file")
         .action((x, c) => c.copy(outputFile = Some(x)))
         .text("The target file"),
-//      opt[Boolean]('i', "inverse")
-//        .action((x, c) => c.copy(inverse = x))
-//        .text("invert output"),
-//      opt[Boolean]("clip")
-//        .action((x, c) => c.copy(clip = x))
-//        .text("clip to size of overlay after composing")
+      //      opt[Boolean]('i', "inverse")
+      //        .action((x, c) => c.copy(inverse = x))
+      //        .text("invert output"),
+      //      opt[Boolean]("clip")
+      //        .action((x, c) => c.copy(clip = x))
+      //        .text("clip to size of overlay after composing")
     )
   }
 

@@ -24,8 +24,8 @@ class Demo extends FunSuite {
       valign = "middle",
       color = "#ffffff",
     )
-    val banner = PixelMatrix(config)
-    banner.foreach(_.saveToFile(new File("./src/test/resources/banners/micronaut-banner.txt")))
+    val banner = PixelMatrix(config).orNull
+    banner.saveToFile(new File("./src/test/resources/banners/micronaut-banner.txt"))
 //    println(banner)
   }
 
@@ -35,7 +35,7 @@ class Demo extends FunSuite {
       width = 90,
       grayscale = true,
       asciiArtChars = PixelMatrix.ASCII_ART_CHARS_MEDIUM,
-    )
+    ).orNull
     val textMatrix = renderText(
       text = "fileserver",
       width = 90,
@@ -44,9 +44,9 @@ class Demo extends FunSuite {
       bgColor = Color.DEFAULT,
       direction = Direction.auto,
       justify = Justify.center
-    )
+    ).orNull
 
-    val banner = imageMatrix.toString + "\n" + textMatrix.toString
+    val banner = s"$imageMatrix\n$textMatrix"
     println(banner)
 //    Files.write(Paths.get("C:\\Users\\sknull\\banner\\banner.txt"), banner.getBytes(StandardCharsets.UTF_8))
   }
@@ -62,7 +62,7 @@ class Demo extends FunSuite {
       color = "#d01349",
       textJustify = Justify.left.entryName
     )
-    val banner = PixelMatrix(config)
+    val banner = PixelMatrix(config).orNull
 //    println(banner)
   }
 }

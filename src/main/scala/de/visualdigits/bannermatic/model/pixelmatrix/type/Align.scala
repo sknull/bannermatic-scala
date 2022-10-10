@@ -21,6 +21,8 @@ object Align extends Enum[Align] {
   }
 
   case object left extends Align
+
   case object center extends Align
+
   case object right extends Align
 }
