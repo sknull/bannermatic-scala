@@ -13,7 +13,7 @@ class PixelMatrixTest extends FunSuite {
   test("bg color") {
     val width = 7
     val height = 3
-    val pm = PixelMatrix(width = width, height = height, char = " ", bgColor = Color.WHITE)
+    val pm = PixelMatrix(width = width, height = height, char = " ", bgColor = Color.WHITE).orNull
 
     val expectedPM = """[39m[48;2;255;255;255m[49m[48;2;255;255;255m       [0m
                        |[39m[48;2;255;255;255m[49m[48;2;255;255;255m       [0m
@@ -23,7 +23,7 @@ class PixelMatrixTest extends FunSuite {
   }
 
   test("padding and clipping") {
-    var pm = PixelMatrix(width = 10, height = 5, char="_")
+    var pm = PixelMatrix(width = 10, height = 5, char="_").orNull
     pm = pm.pad(location = Inset.top, amount = 3, char = "1")
     pm = pm.pad(location = Inset.right, amount = 6, char = "2")
     pm = pm.pad(location = Inset.bottom, amount = 3, char = "3")
@@ -46,8 +46,7 @@ class PixelMatrixTest extends FunSuite {
 
   test("clipping") {
     val pm = PixelMatrix(width = 10, height = 2, char=" ", fgColor = Color.YELLOW, bgColor = Color.BLUE)
-      .clip()
-      .inset(1)
+      .map(_.clip().inset(1)).orNull
 
     val expectedPM = """[33m[44m[33m[44m              [0m
                        |[33m[44m[33m[44m              [0m

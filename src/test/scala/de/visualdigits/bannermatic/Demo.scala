@@ -24,8 +24,8 @@ class Demo extends FunSuite {
       valign = "middle",
       color = "#ffffff",
     )
-    val banner: PixelMatrix = PixelMatrix(config)
-    banner.saveToFile(new File("./src/test/resources/banners/micronaut-banner.txt"))
+    val banner = PixelMatrix(config)
+    banner.foreach(_.saveToFile(new File("./src/test/resources/banners/micronaut-banner.txt")))
 //    println(banner)
   }
 

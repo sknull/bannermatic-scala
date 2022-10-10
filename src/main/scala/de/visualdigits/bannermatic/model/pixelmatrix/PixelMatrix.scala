@@ -24,7 +24,6 @@ case class PixelMatrix(
                         asciiArtChars: Array[String] = Array(),
                         grayscale: Boolean = false,
                         edgeDetection: Boolean = false,
-
                         flags: Set[String] = Set()
                       ) {
 
@@ -398,8 +397,32 @@ object PixelMatrix {
   val ASCII_ART_CHARS_SHORT: Array[String] = "@%#*+=-:. ".reverse.toCharArray.map(_.toString)
   val ASCII_ART_CHARS_SMILEYS: Array[String] = Array(" ", "🫥", "〠", "👌", "👐", "+", "*", "%", "&", "〠", "I", "O", "M", "#", "😍")
 
-  def apply(config: Config): PixelMatrix = {
-    var textBanner = stringOption(config.text).map(text =>
+  def apply(
+             width: Int = 0,
+             height: Int = 0,
+             char: String = Pixel.CHAR_DEFAULT,
+             fgColor: Color = Pixel.COLOR_DEFAULT,
+             bgColor: Color = Pixel.COLOR_DEFAULT,
+             asciiArtChars: Array[String] = Array(),
+             grayscale: Boolean = false,
+             edgeDetection: Boolean = false,
+             flags: Set[String] = Set()
+           ): Option[PixelMatrix] = {
+    Some(new PixelMatrix(
+      width = width,
+      height = height,
+      char = char,
+      fgColor = fgColor,
+      bgColor = bgColor,
+      asciiArtChars = asciiArtChars,
+      grayscale = grayscale,
+      edgeDetection = edgeDetection,
+      flags = flags
+    ))
+  }
+
+  def apply(config: Config): Option[PixelMatrix] = {
+    var textBanner = stringOption(config.text).flatMap(text =>
       renderText(
         text = text,
         width = config.textWidth,
@@ -409,7 +432,7 @@ object PixelMatrix {
         direction = Direction.valueOf(config.textDirection),
         justify = Justify.valueOf(config.textJustify)
       ))
-    val imageBanner = config.image.map(image => renderImage(
+    val imageBanner = config.image.flatMap(image => renderImage(
       imageFile = image,
       width = config.imageWidth,
       pixelRatio = config.pixelRatio,
@@ -448,7 +471,7 @@ object PixelMatrix {
       }
     }
     config.outputFile.foreach(of => banner.foreach(b => Files.write(of.toPath, b.toString.getBytes())))
-    banner.orNull
+    banner
   }
 
   def renderImage(
@@ -460,12 +483,12 @@ object PixelMatrix {
              asciiArtChars: Array[String],
              grayscale: Boolean = false,
              edgeDetection: Boolean = true
-           ): PixelMatrix = {
+           ): Option[PixelMatrix] = {
     val image = ImageIO.read(imageFile)
     val ratio = pixelRatio * image.getHeight / image.getWidth
     val height = (width * ratio * 10 + 0.5).toInt / 10
     PixelMatrix(width = width, height = height, char = char, asciiArtChars = asciiArtChars, grayscale = grayscale, edgeDetection = edgeDetection)
-      .loadImage(image, width, height, isBackground, grayscale)
+      .map(_.loadImage(image, width, height, isBackground, grayscale))
   }
 
   def renderText(
@@ -476,12 +499,12 @@ object PixelMatrix {
              bgColor: Color,
              direction: Direction,
              justify: Justify
-           ): PixelMatrix = {
+           ): Option[PixelMatrix] = {
     val figlet = Figlet(font, width, direction, justify)
     val raw = figlet.renderText(text)
     val rows = raw.split("\n").map(_.toCharArray.map(_.toString))
     val finalWidth = Math.max(width, rows.map(_.length).max)
-    val pm = PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
-    pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0)
+    PixelMatrix(width = finalWidth, height = rows.length, fgColor = fgColor, bgColor = bgColor)
+      .map(pm => pm.loadRows(value = rows, isAsciiArt = pm.nAsciiArtChars > 0))
   }
 }

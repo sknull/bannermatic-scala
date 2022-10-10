@@ -25,8 +25,7 @@ class BannerMaticTest extends FunSuite {
       bgColor = Color.DEFAULT,
       direction = Direction.auto,
       justify = Justify.center
-    )
-      .clip().inset(1)
+    ).map(_.clip().inset(1)).orNull
     val expected = """[38;2;255;255;255m[49m[38;2;255;255;255m[49m                                                     [0m
                            |[38;2;255;255;255m[49m[38;2;255;255;255m[49m      db   db d88888b db      db       .d88b.        [0m
                            |[38;2;255;255;255m[49m[38;2;255;255;255m[49m      88   88 88'     88      88      .8P  Y8.       [0m
@@ -56,7 +55,7 @@ class BannerMaticTest extends FunSuite {
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-    )
+    ).orNull
     val expected: String = new String(Files.readAllBytes(new File(ClassLoader.getSystemClassLoader.getResource("renderedImage_expected.txt").toURI).toPath), StandardCharsets.UTF_8)
     val actual = banner.toString
     assertEquals(expected, actual)
@@ -70,7 +69,7 @@ class BannerMaticTest extends FunSuite {
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-    )
+    ).orNull
     val fg = renderText(
       text = "RASPBERRY PI",
       width = 100,
@@ -79,7 +78,7 @@ class BannerMaticTest extends FunSuite {
       bgColor = Color.DEFAULT,
       direction = Direction.auto,
       justify = Justify.center
-    )
+    ).orNull
     val banner = bg.overlay(Align.right, VAlign.middle, fg, Placement.outside)
     val expected = """[49m[49m                                                                                                                                                                                              [0m
                            |[49m[49m                                                                                                                                                                                              [0m
@@ -128,7 +127,7 @@ class BannerMaticTest extends FunSuite {
       textJustify = "right",
       textDirection = "right_to_left"
     )
-    val banner = PixelMatrix(config)
+    val banner = PixelMatrix(config).orNull
     val expected = """[49m[49m                               [39m[48;2;183;0;35m [39m[48;2;169;0;32m [39m[48;2;176;0;34m  [39m[48;2;178;0;35m [39m[48;2;187;0;37m [39m[48;2;221;0;43m [39m[49m                                          [0m
                            |[49m[49m                            [39m[48;2;226;0;44m [39m[48;2;193;0;38m [39m[48;2;170;0;33m [39m[48;2;167;0;33m [39m[48;2;172;0;34m [39m[48;2;168;0;32m [39m[48;2;167;0;33m [39m[48;2;166;0;32m  [39m[48;2;170;0;33m [39m[48;2;175;0;33m [39m[48;2;187;0;37m [39m[48;2;204;0;40m [39m[48;2;222;0;43m [39m[48;2;218;0;43m [39m[49m                                     [0m
                            |[49m[49m                         [39m[48;2;130;0;26m [39m[48;2;194;0;38m [39m[48;2;188;0;37m [39m[48;2;179;0;35m [39m[48;2;153;0;30m [39m[48;2;130;0;25m [39m[48;2;132;0;26m   [39m[48;2;130;0;25m   [39m[48;2;131;0;26m [39m[48;2;134;0;26m [39m[48;2;138;0;27m [39m[48;2;145;0;28m [39m[48;2;155;0;30m [39m[48;2;168;0;32m [39m[48;2;186;0;36m [39m[48;2;211;0;41m [39m[48;2;227;0;44m [39m[48;2;213;0;42m [39m[48;2;218;0;43m [39m[48;2;226;0;44m [39m[49m                               [0m
@@ -193,7 +192,7 @@ class BannerMaticTest extends FunSuite {
       valign="top",
       outputFile = Some(new File(System.getProperty("user.home"), "banner.txt"))
     )
-    val banner = PixelMatrix(config)
+    val banner = PixelMatrix(config).orNull
     val expected = """[49m[49mdb   db d88888b db      db     [39m[48;2;183;0;35m [39m[48;2;169;0;32m [39m[48;2;176;0;34m.d[39m[48;2;178;0;35m8[39m[48;2;187;0;37m8[39m[48;2;221;0;43mb[39m[49m.                                         [0m
                            |[49m[49m88   88 88'     88      88  [39m[48;2;226;0;44m [39m[48;2;193;0;38m [39m[48;2;170;0;33m [39m[48;2;167;0;33m [39m[48;2;172;0;34m.[39m[48;2;168;0;32m8[39m[48;2;167;0;33mP[39m[48;2;166;0;32m  [39m[48;2;170;0;33mY[39m[48;2;175;0;33m8[39m[48;2;187;0;37m.[39m[48;2;204;0;40m [39m[48;2;222;0;43m [39m[48;2;218;0;43m [39m[49m                                     [0m
                            |[49m[49m88ooo88 88ooooo 88      8[39m[48;2;130;0;26m8[39m[48;2;194;0;38m [39m[48;2;188;0;37m [39m[48;2;179;0;35m [39m[48;2;153;0;30m [39m[48;2;130;0;25m [39m[48;2;132;0;26m 88[39m[48;2;130;0;25m   [39m[48;2;131;0;26m [39m[48;2;134;0;26m8[39m[48;2;138;0;27m8[39m[48;2;145;0;28m [39m[48;2;155;0;30m [39m[48;2;168;0;32m [39m[48;2;186;0;36m [39m[48;2;211;0;41m [39m[48;2;227;0;44m [39m[48;2;213;0;42m [39m[48;2;218;0;43m [39m[48;2;226;0;44m [39m[49m                               [0m

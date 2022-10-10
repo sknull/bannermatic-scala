@@ -21,7 +21,7 @@ class RenderBannerTest extends FunSuite {
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-    )
+    ).orNull
     val fg = renderText(
       text = "TEXTBOX",
       width = 100,
@@ -30,7 +30,7 @@ class RenderBannerTest extends FunSuite {
       bgColor = Color.DEFAULT,
       direction = Direction.auto,
       justify = Justify.center
-    )
+    ).orNull
     val banner = bg.overlay(Align.center, VAlign.bottom, fg, Placement.outside)
 //    IOUtils.write(banner.toString, new FileOutputStream(new File("/Users/knull/Pictures/banner.txt")))
   }
