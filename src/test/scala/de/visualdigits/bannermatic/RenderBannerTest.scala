@@ -18,12 +18,9 @@ class RenderBannerTest extends FunSuite {
     val bg = renderImage(
       imageFile = image,
       width = 60,
-      char = " ",
-      isBackground = true,
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-      edgeDetection = true
     )
     val fg = renderText(
       text = "TEXTBOX",

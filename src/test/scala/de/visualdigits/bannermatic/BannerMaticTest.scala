@@ -53,12 +53,9 @@ class BannerMaticTest extends FunSuite {
     val banner = renderImage(
       imageFile = imageFile,
       width = 120,
-      char = " ",
-      isBackground = true,
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-      edgeDetection = true
     )
     val expected: String = new String(Files.readAllBytes(new File(ClassLoader.getSystemClassLoader.getResource("renderedImage_expected.txt").toURI).toPath), StandardCharsets.UTF_8)
     val actual = banner.toString
@@ -70,12 +67,9 @@ class BannerMaticTest extends FunSuite {
     val bg = renderImage(
       imageFile = imageFile,
       width = 90,
-      char = " ",
-      isBackground = true,
       pixelRatio = 3.0 / 7.0,
       asciiArtChars = Array(),
       grayscale = true,
-      edgeDetection = true
     )
     val fg = renderText(
       text = "RASPBERRY PI",
