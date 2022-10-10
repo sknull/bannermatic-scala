@@ -1,4 +1,4 @@
-package de.visualdigits.bannermatic
+package de.visualdigits.bannermatic.model
 
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}

@@ -1,5 +1,6 @@
 package de.visualdigits.bannermatic
 
+import de.visualdigits.bannermatic.model.Config
 import de.visualdigits.bannermatic.model.pixelmatrix.PixelMatrix
 
 object BannerMatic {

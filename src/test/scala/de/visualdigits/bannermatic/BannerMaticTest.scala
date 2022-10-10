@@ -1,5 +1,6 @@
 package de.visualdigits.bannermatic
 
+import de.visualdigits.bannermatic.model.Config
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.PixelMatrix.{renderImage, renderText}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Placement, VAlign}

@@ -1,6 +1,6 @@
 package de.visualdigits.bannermatic.model.pixelmatrix
 
-import de.visualdigits.bannermatic.Config
+import de.visualdigits.bannermatic.model.Config
 import de.visualdigits.bannermatic.model.figlet.Figlet
 import de.visualdigits.bannermatic.model.figlet.`type`.{Direction, Justify}
 import de.visualdigits.bannermatic.model.pixelmatrix.`type`.{Align, Inset, Placement, VAlign}
